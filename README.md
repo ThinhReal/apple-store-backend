@@ -1,63 +1,83 @@
-# 🚀 The Challenge Series
-## Challenge 16: The Complex Input (Mastering Request Mapping)
-- Objective: Handle various and complex data types sent from the client.
+# 🍎 Apple Store - Rest API Service
+## Challenge 1: The Blueprint (Setup, Entities & Swagger)
+Before writing business logic, a system needs a foundation and clear documentation so the Frontend team knows what to expect.
 
-- Task: Develop a search API GET /api/v1/products/search that accepts:
+- Objective: Design the database schema and expose the API documentation.
 
-    - @RequestParam for the product name.
+- Tasks:
 
-    - @RequestHeader to retrieve a "store-token".
+  - Initialize the Spring Boot project with Web, JPA, SQL (MySQL/PostgreSQL), and SpringDoc (Swagger) dependencies.
 
-    - A List<String> tags for filtering.
+  - Create the core Entities: User, Product, Order, and OrderItem.
 
-    - An Enum Category (LAPTOP, SMARTPHONE, ACCESSORIES).
+  - Configure Swagger to display at http://localhost:8080/swagger-ui.html.
 
-- Outcome: Successful mapping of all parameters from a Postman query like: ?name=macbook&tags=apple,m3&category=LAPTOP.
+- Outcome: You have a running application that connects to an SQL database, auto-generates the tables, and displays a beautiful, interactive API documentation page.
 
-## Challenge 17: The Response Specialist (ResponseEntity & Headers)
-- Objective: Master HTTP status codes and custom headers to provide meaningful responses.
+## Challenge 2: The Catalog (Advanced CRUD, Search & Pagination)
+An Apple Store has hundreds of products. Sending them all at once will crash the app. We need pagination and dynamic searching.
 
-- Task: Implement POST /api/v1/products.
+- Objective: Build the Product management APIs for both Customers and Admins.
 
-  - On success: Return 201 Created status.
+- Tasks:
 
-  - Include the created object in the ResponseEntity body.
+  - Implement standard CRUD for Products (Admin only conceptually for now).
 
-  - Add a custom header named X-Product-Id.
+  - Implement GET /api/v1/products using Spring Data JPA's Pageable.
 
-- Outcome: Postman shows a green 201 Created status and the X-Product-Id key in the Headers tab.
+  - Add custom query methods in the Repository to search by name (e.g., "iPhone") or filter by category (e.g., "MAC").
 
-## Challenge 18: The Fortress (Spring Validation & BindingResult)
-- Objective: Prevent "dirty" or invalid data from entering the system.
+- Outcome: You can send a request to /products?page=0&size=5&search=Pro and receive exactly 5 items along with total page metadata.
 
-- Task: * Apply constraints in ProductRequestDTO: @NotBlank (name), @Min(100) (price), and @Size(max=10) (tags).
+## Challenge 3: The Apple ID (JWT Authentication & Authorization)
+This is the most critical part. You cannot allow anyone to create an order or delete a product without proving who they are and what their role is.
 
-    - In the Controller, use BindingResult to manually intercept errors and log them before they reach the handler.
+- Objective: Secure the API using JSON Web Tokens (JWT) and Role-Based Access Control (RBAC).
 
-    - Outcome: Sending a product with a price of -50 triggers a 400 Bad Request with a detailed error map.
+- Tasks:
 
-## Challenge 19: The AOP Exception Shield (Custom vs. System)
-- Objective: Use Aspect-Oriented Programming (AOP) to mask sensitive system errors while exposing user-friendly custom errors.
+  - Integrate Spring Security.
 
-- Task: * Create a ProductNotFoundException (Custom) and a generic SystemBusyException.
+  - Create POST /auth/register and POST /auth/login.
 
-    - Implement a @RestControllerAdvice.
+  - Write a utility class to generate and validate JWTs.
 
-    - Logic: If it's a Custom Exception, return the specific message. If it's a System Exception (like SQL errors), return a generic: "System is busy, please try again later."
+  - Create a JWT Filter to intercept requests and check for the Authorization: Bearer <token> header.
 
-- Outcome: API returns specific messages for "Product Not Found" but hides raw Java stack traces for internal crashes.
+  - Restrict POST /products to ADMIN roles and POST /orders to CUSTOMER roles.
 
-## Challenge 20: The Ultimate Integration (End-to-End Workflow)
-- Objective: Combine all previous skills into a single, flawless API endpoint.
+- Outcome: Trying to delete an iPhone without an Admin token returns a 403 Forbidden. Logging in successfully returns a valid JWT.
 
-- Task: Create PUT /api/v1/products/{id}.
+## Challenge 4: The Checkout (Relational Mapping & Transactions)
+E-commerce is all about the checkout. This requires handling multiple database tables simultaneously while ensuring data integrity.
 
-    - Must use @Valid for the request body.
+- Objective: Build the ordering system using complex Entity relationships mapping and @Transactional.
 
-    - Check ID existence using @PathVariable.
+- Tasks:
 
-    - If the ID is missing, throw a Custom Exception.
+  - Map the One-to-Many and Many-to-Many relationships between User, Order, and OrderItem.
 
-    - Handle all mapping via ModelMapper in the Service layer.
+  - Create POST /api/v1/orders. The payload should include a list of product IDs and quantities.
 
-- Outcome: A professional, "skinny" Controller with no try-catch blocks, managing full CRUD logic with total data safety.
+  - Implement logic to calculate the total price and deduct inventory.
+
+  - Use @Transactional to ensure that if saving the order fails, the inventory deduction rolls back.
+
+- Outcome: A user can submit an order for an iPhone and AirPods. The system creates the order, links it to the user, and updates the stock, all in one secure transaction.
+
+## Challenge 5: The QA Engineer (Unit Testing)
+Code isn't finished until it's tested. Professional environments require Unit Tests to ensure future changes don't break existing features.
+
+- Objective: Write automated tests for your application to guarantee stability.
+
+- Tasks:
+
+  - Use JUnit 5 and Mockito to test the ProductService.
+
+  - Mock the ProductRepository so the test doesn't actually hit the SQL database.
+
+  - Write tests for "Product Found" and "Product Not Found" (Custom Exception) scenarios.
+
+  - (Bonus) Use MockMvc to test the Controller endpoints.
+
+- Outcome: You can run mvn test and see a beautiful green report proving your logic works flawlessly without starting the actual server.
