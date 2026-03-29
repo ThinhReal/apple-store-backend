@@ -45,6 +45,7 @@ Before writing business logic, a system needs a foundation and clear documentati
   - Initialize the Spring Boot project with Web, JPA, SQL (MySQL/PostgreSQL), and SpringDoc (Swagger) dependencies.
 
   - Create the core Entities: User, Product, Order, and OrderItem.
+    ![ERD](https://res.cloudinary.com/drw6fqjgr/image/upload/v1774769901/Screenshot_2026-03-29_at_14.38.04_nalcyu.png)
 
   - Configure Swagger to display at http://localhost:8080/swagger-ui.html.
 
