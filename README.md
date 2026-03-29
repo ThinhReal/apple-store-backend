@@ -1,4 +1,40 @@
-# 🍎 Apple Store - Rest API Service
+# 🍎 Apple Store - iStore REST API
+
+Welcome to the backend project for the **Apple Store** system. This is a professional e-commerce application built using Spring Boot, MySQL Cloud (Aiven), and Swagger.
+
+## 🛠️ System Requirements
+- **Java 17+**
+
+- **Maven 3.x**
+
+- **Aiven.io** account (or local MySQL)
+
+## 🔑 Setup Instructions
+
+For security reasons, sensitive information has been hidden. To run the project, you need to set up the following **Environment Variables** in your IDE:
+
+| Variable | Description | Example |
+
+| :--- | :--- | :--- |
+
+| `DB_URL` | Database connection path | `jdbc:mysql://host:port/defaultdb?ssl-mode=REQUIRED` |
+
+| `DB_USERNAME` | DB Username | `avnadmin` |
+
+| `DB_PASSWORD` | DB Password | `your_secret_password` |
+
+### Launch Steps:
+1. Clone the project: `git clone <your-repo-url>`
+2. Open the project using IntelliJ IDEA.
+
+3. Set Environment Variables in **Run/Debug Configurations**.
+
+4. Run the application.
+
+5. Access Swagger UI at: `http://localhost:8080/swagger-ui/index.html`
+
+## 👨‍💻 Author
+- **Thịnh Real** - Backend Developer
 ## Challenge 1: The Blueprint (Setup, Entities & Swagger)
 Before writing business logic, a system needs a foundation and clear documentation so the Frontend team knows what to expect.
 
