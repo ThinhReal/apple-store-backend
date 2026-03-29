@@ -1,6 +1,6 @@
 package com.thinhreal.applestore.controller;
 
-import com.thinhreal.applestore.model.entity.Product;
+import com.thinhreal.applestore.model.entity.ProductEntity;
 import com.thinhreal.applestore.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +15,12 @@ public class ProductController {
     private final ProductRepository productRepository;
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<ProductEntity> getAllProducts() {
         return productRepository.findAll();
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
+    public ProductEntity createProduct(@RequestBody ProductEntity product) {
         return productRepository.save(product);
     }
 }

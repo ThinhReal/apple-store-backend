@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Data // Lombok: Generates Getters, Setters, toString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
