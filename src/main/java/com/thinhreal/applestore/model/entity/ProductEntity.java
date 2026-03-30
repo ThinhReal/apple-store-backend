@@ -5,29 +5,36 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
-@Data // Lombok: Generates Getters, Setters, toString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    //Parent of OrderItem
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<OrderItemEntity> orderItems;
+
+    //Children of Category
+    @ManyToOne
+    @JoinColumn(name="category_id")
+    private CategoryEntity category;
+
 
     @Column(nullable = false, unique = true)
-    private String name; // e.g., "iPhone 15 Pro"
+    private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
-    private BigDecimal price; // BigDecimal is highly recommended for exact currency calculations!
+    private BigDecimal price;
 
     @Column(nullable = false)
     private Integer stockQuantity;
-
-    @Column(nullable = false)
-    private String category; // We can upgrade this to an Enum later
 }

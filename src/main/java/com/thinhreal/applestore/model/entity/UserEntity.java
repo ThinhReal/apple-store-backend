@@ -1,9 +1,8 @@
 package com.thinhreal.applestore.model.entity;
 import java.util.Arrays;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import java.util.List;
+
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 //import org.apache.commons.validator.Validator;
@@ -18,13 +17,21 @@ import org.passay.RuleResult;
 import org.passay.PasswordData;
 
 @Entity
+@Table(name="users")
 @Getter
 @NoArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="email", unique = true)
     private String email;
+
+    //Parent of Order
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<OrderEntity> orders;
+
     private String password;
     private String first_name;
     private String last_name;
@@ -51,7 +58,7 @@ public class UserEntity {
     
         // PASSWORD VALIDATION
         //1. Define password rules
-        PasswordValidator validator2 = new PasswordValidator(Arrays.asList(
+        PasswordValidator passwordValidator = new PasswordValidator(Arrays.asList(
                 // Length rule: Must be between 8 and 30 characters
                 new LengthRule(8, 30),
                 // Must contain at least 1 uppercase letter
@@ -70,7 +77,7 @@ public class UserEntity {
         PasswordData userPassword = new PasswordData(password);
 
         // 3. Run the validation
-        RuleResult result = validator2.validate(userPassword);
+        RuleResult result = passwordValidator.validate(userPassword);
 
         // 4. Return true if it passes all rules, false otherwise
         if (result.isValid()){
