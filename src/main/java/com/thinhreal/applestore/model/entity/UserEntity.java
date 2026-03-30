@@ -1,4 +1,5 @@
 package com.thinhreal.applestore.model.entity;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -6,8 +7,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 //import org.apache.commons.validator.Validator;
+import lombok.Setter;
 import org.apache.commons.validator.routines.EmailValidator;
 //import class from passy to validate password
+import org.hibernate.annotations.UpdateTimestamp;
 import org.passay.PasswordValidator;
 import org.passay.CharacterRule;
 import org.passay.LengthRule;
@@ -19,6 +22,7 @@ import org.passay.PasswordData;
 @Entity
 @Table(name="users")
 @Getter
+@Setter
 @NoArgsConstructor
 public class UserEntity {
     @Id
