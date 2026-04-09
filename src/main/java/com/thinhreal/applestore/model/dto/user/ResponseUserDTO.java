@@ -1,9 +1,13 @@
 package com.thinhreal.applestore.model.dto.user;
 
 import com.thinhreal.applestore.model.entity.UserEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class ResponseUserDTO {
@@ -12,13 +16,5 @@ public class ResponseUserDTO {
     private String first_name;
     private String last_name;
     private String address;
-
-    public ResponseUserDTO(UserEntity userEntity){
-        this.id = userEntity.getId();
-        this.email = userEntity.getEmail();
-        this.first_name = userEntity.getFirst_name();
-        this.last_name = userEntity.getLast_name();
-        this.address = userEntity.getAddress();
-    }
 }
 

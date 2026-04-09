@@ -1,10 +1,12 @@
 package com.thinhreal.applestore.service;
 
+import com.thinhreal.applestore.config.ModelMapperConfig;
 import com.thinhreal.applestore.model.dto.user.RequestUserDTO;
 import com.thinhreal.applestore.model.dto.user.ResponseUserDTO;
 import com.thinhreal.applestore.model.entity.UserEntity;
 import com.thinhreal.applestore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    // dùng modelMapper class gốc của thư viện
+    private final ModelMapper modelMapper;
     //Create New User
     public ResponseUserDTO createUser(RequestUserDTO req) {
         UserEntity newUser = new UserEntity(
@@ -24,20 +28,23 @@ public class UserService {
                 req.getPassword(),   // 4
                 req.getAddress()    //5
         );
+        // Now the data is in Transient, only in RAM , we need to save it
         UserEntity savedUser = userRepository.save(newUser);
 
-        return new ResponseUserDTO(savedUser);
+        return modelMapper.map(savedUser, ResponseUserDTO.class);
     }
     // Get All User
     public List<ResponseUserDTO> getAllUser(){
         List<UserEntity> users = userRepository.findAll();
-        return users.stream().map(ResponseUserDTO::new).collect(Collectors.toList());
+        return users.stream()
+                .map(user -> modelMapper.map(user, ResponseUserDTO.class))
+                .collect(Collectors.toList());
     }
 
     //Get User By ID
     public ResponseUserDTO getUserById(Long id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Cannot find the user with id: " + id));
-        return new ResponseUserDTO(user);
+        return modelMapper.map(user, ResponseUserDTO.class);
     }
     //Update User
     public ResponseUserDTO updateUser(Long id, RequestUserDTO req){
@@ -57,13 +64,14 @@ public class UserService {
         }
 
         if (req.getEmail() != null && !req.getEmail().trim().isEmpty()) {
-            // (Thực tế nên gọi repository.existsByEmail() ở đây để check trùng)
+            //Should add 1 function to check the email duplication here before set directly to entity.
+
             existingUser.setEmail(req.getEmail());
         }
-        // Vì existingUser ĐÃ CÓ ID, Spring Data JPA sẽ tự động hiểu đây là lệnh UPDATE (chạy hàm merge)
+        // existingUser already had ID, so Spring Data JPA automatically use .save as .merge (update)
         UserEntity updatedUser = userRepository.save(existingUser);
 
-        return new ResponseUserDTO(updatedUser);
+        return modelMapper.map(updatedUser, ResponseUserDTO.class) ;
     }
     //Delete User
     public String deleteUser(Long id) {

@@ -41,6 +41,7 @@ public class UserEntity {
     private String last_name;
     private String address;
 
+    // Constructor
     public UserEntity (String first_name, String last_name, String email, String password, String address) {
         // FIRST$LAST NAME VALIDATION
         if (first_name == null || first_name.trim().isEmpty() || last_name == null || last_name.trim().isEmpty()) {
