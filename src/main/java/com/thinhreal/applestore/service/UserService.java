@@ -1,6 +1,7 @@
 package com.thinhreal.applestore.service;
 
 import com.thinhreal.applestore.config.ModelMapperConfig;
+import com.thinhreal.applestore.exception.BusinessException;
 import com.thinhreal.applestore.model.dto.user.RequestUserDTO;
 import com.thinhreal.applestore.model.dto.user.ResponseUserDTO;
 import com.thinhreal.applestore.model.entity.UserEntity;
@@ -43,7 +44,7 @@ public class UserService {
 
     //Get User By ID
     public ResponseUserDTO getUserById(Long id) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Cannot find the user with id: " + id));
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new BusinessException("Cannot find the user with id: " + id));
         return modelMapper.map(user, ResponseUserDTO.class);
     }
     //Update User

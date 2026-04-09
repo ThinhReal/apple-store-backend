@@ -6,10 +6,10 @@ import com.thinhreal.applestore.model.dto.exceptionResponse.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@RestControllerAdvice //@Aspect duoc custom voi default Advice: After return
 public class GlobalExceptionHandler {
     // Business Exception
-    @ExceptionHandler(BusinessException.class)
+    @ExceptionHandler(BusinessException.class) // Pointcut
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException err) {
         // Create a New DTO response
         ErrorResponse body = new ErrorResponse(
