@@ -1,0 +1,167 @@
+openapi: 3.0.3
+info:
+  title: Apple Store API
+  description: iStore REST API - Challenge 1 Blueprint
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: Products
+    description: Product catalog endpoints (contract-first demo)
+
+paths:
+  /api/v1/products:
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      operationId: getAllProducts
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductDTO"
+    post:
+      tags:
+        - Products
+      summary: Create a product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreateDTO"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDTO"
+
+components:
+  schemas:
+    ProductDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: iPhone 16 Pro
+        description:
+          type: string
+          example: Latest Apple smartphone
+        price:
+          type: number
+          format: double
+          example: 999.99
+        stockQuantity:
+          type: integer
+          format: int32
+          example: 50
+      required:
+        - name
+        - price
+        - stockQuantity
+
+    ProductCreateDTO:
+      type: object
+      properties:
+        name:
+          type: string
+          example: iPhone 16 Pro
+        description:
+          type: string
+          example: Latest Apple smartphone
+        price:
+          type: number
+          format: double
+          example: 999.99
+        stockQuantity:
+          type: integer
+          format: int32
+          example: 50
+      required:
+        - name
+        - price
+        - stockQuantity
+
+    UserDTO:
+      type: object
+      description: User profile (documented for frontend; implemented separately)
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        address:
+          type: string
+
+    CategoryDTO:
+      type: object
+      description: Product category
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+
+    OrderDTO:
+      type: object
+      description: Customer order
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED]
+        order_date:
+          type: string
+          format: date-time
+        total_amount:
+          type: number
+          format: double
+
+    OrderItemDTO:
+      type: object
+      description: Line item inside an order
+      properties:
+        id:
+          type: integer
+          format: int64
+        orderId:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int32
+        unit_price:
+          type: number
+          format: double

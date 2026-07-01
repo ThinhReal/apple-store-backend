@@ -19,6 +19,8 @@ import org.passay.WhitespaceRule;
 import org.passay.RuleResult;
 import org.passay.PasswordData;
 
+import com.thinhreal.applestore.model.entity.OrderEntity;
+
 @Entity
 @Table(name="users")
 @Getter
@@ -49,7 +51,7 @@ public class UserEntity {
         }
         this.first_name = first_name;
         this.last_name = last_name;
-        
+
         // EMAIL VALIDATION
         if (email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("Missing Email Field");
@@ -60,9 +62,27 @@ public class UserEntity {
         }else{
             throw new IllegalArgumentException("Invalid Email");
         }
-    
+
         // PASSWORD VALIDATION
         //1. Define password rules
+        RuleResult result = getRuleResult(password);
+
+        // 4. Return true if it passes all rules, false otherwise
+        if (result.isValid()){
+            this.password = password;
+        }
+        else{
+            throw new IllegalArgumentException("Password does not meet the criteria");
+        }
+
+        // ADDRESS VALIDATION
+        if (address == null || address.trim().isEmpty()) {
+            throw new IllegalArgumentException("Your address is empty, please check again");
+        }
+        this.address = address;
+}
+
+    private RuleResult getRuleResult(String password) {
         PasswordValidator passwordValidator = new PasswordValidator(Arrays.asList(
                 // Length rule: Must be between 8 and 30 characters
                 new LengthRule(8, 30),
@@ -82,21 +102,7 @@ public class UserEntity {
         PasswordData userPassword = new PasswordData(password);
 
         // 3. Run the validation
-        RuleResult result = passwordValidator.validate(userPassword);
-
-        // 4. Return true if it passes all rules, false otherwise
-        if (result.isValid()){
-            this.password = password;
-        }
-        else{
-            throw new IllegalArgumentException("Password does not meet the criteria");
-        }
-    
-        // ADDRESS VALIDATION
-        if (address == null || address.trim().isEmpty()) {
-            throw new IllegalArgumentException("Your address is empty, please check again");
-        }
-        this.address = address;
-}
+        return passwordValidator.validate(userPassword);
+    }
 }
 
