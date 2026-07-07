@@ -11,6 +11,8 @@ servers:
 tags:
   - name: Users
     description: User management
+  - name: Categories
+    description: Category management
   - name: Products
     description: Product management
   - name: Orders
@@ -99,6 +101,99 @@ paths:
       tags: [Users]
       summary: Delete user
       operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted successfully (No Content)
+
+  # ==========================================
+  # CATEGORIES API (CRUD)
+  # ==========================================
+  /api/v1/categories:
+    get:
+      tags: [Categories]
+      summary: Get all categories
+      operationId: getAllCategories
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseCategoryDTO'
+    post:
+      tags: [Categories]
+      summary: Create a new category
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestCategoryDTO'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseCategoryDTO'
+
+  /api/v1/categories/{id}:
+    get:
+      tags: [Categories]
+      summary: Get category by ID
+      operationId: getCategoryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseCategoryDTO'
+    put:
+      tags: [Categories]
+      summary: Update category
+      operationId: updateCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestCategoryDTO'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseCategoryDTO'
+    delete:
+      tags: [Categories]
+      summary: Delete category
+      operationId: deleteCategory
       parameters:
         - name: id
           in: path
@@ -334,12 +429,22 @@ components:
         address:
           type: string
 
-    # --- CATEGORY DTOs (Used in Product) ---
+    # --- CATEGORY DTOs ---
+    RequestCategoryDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required: [name]
+
     ResponseCategoryDTO:
       type: object
       properties:
         id:
-          type: string # Noted as String in ERD. Change to integer if required.
+          type: integer
+          format: int64
         name:
           type: string
         description:
@@ -350,7 +455,8 @@ components:
       type: object
       properties:
         category_id:
-          type: string # Note: ERD indicates Category id is a String.
+          type: integer
+          format: int64
         name:
           type: string
         price:

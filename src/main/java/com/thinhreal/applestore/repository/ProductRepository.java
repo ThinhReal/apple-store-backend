@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
-    // This interface now has save(), findAll(), findById(), delete() automatically!
+
+    boolean existsByCategory_Id(Long categoryId);
 }
