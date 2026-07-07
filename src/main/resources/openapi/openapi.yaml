@@ -17,6 +17,8 @@ tags:
     description: Product management
   - name: Orders
     description: Order management
+  - name: OrderItems
+    description: Order item management
 
 paths:
   # ==========================================
@@ -391,6 +393,99 @@ paths:
         '204':
           description: Deleted successfully (No Content)
 
+  # ==========================================
+  # ORDER ITEMS API (CRUD)
+  # ==========================================
+  /api/v1/order-items:
+    get:
+      tags: [OrderItems]
+      summary: Get all order items
+      operationId: getAllOrderItems
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseOrderItemDTO'
+    post:
+      tags: [OrderItems]
+      summary: Create a new order item
+      operationId: createOrderItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestCreateOrderItemDTO'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOrderItemDTO'
+
+  /api/v1/order-items/{id}:
+    get:
+      tags: [OrderItems]
+      summary: Get order item by ID
+      operationId: getOrderItemById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOrderItemDTO'
+    put:
+      tags: [OrderItems]
+      summary: Update order item
+      operationId: updateOrderItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUpdateOrderItemDTO'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOrderItemDTO'
+    delete:
+      tags: [OrderItems]
+      summary: Delete order item
+      operationId: deleteOrderItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted successfully (No Content)
+
 # ==========================================
 # SCHEMAS (DTOs)
 # ==========================================
@@ -488,6 +583,31 @@ components:
     RequestOrderItemDTO:
       type: object
       description: When placing an order, the frontend only needs to send the product ID and quantity.
+      properties:
+        product_id:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int32
+      required: [product_id, quantity]
+
+    RequestCreateOrderItemDTO:
+      type: object
+      properties:
+        order_id:
+          type: integer
+          format: int64
+        product_id:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int32
+      required: [order_id, product_id, quantity]
+
+    RequestUpdateOrderItemDTO:
+      type: object
       properties:
         product_id:
           type: integer
