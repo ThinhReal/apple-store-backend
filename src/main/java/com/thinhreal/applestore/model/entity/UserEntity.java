@@ -44,7 +44,12 @@ public class UserEntity {
     private String address;
 
     // Constructor
-    public UserEntity (String first_name, String last_name, String email, String password, String address) {
+    public UserEntity (String first_name,
+                       String last_name,
+                       String email,
+                       String password,
+                       String address)
+    {
         // FIRST$LAST NAME VALIDATION
         if (first_name == null || first_name.trim().isEmpty() || last_name == null || last_name.trim().isEmpty()) {
             throw new IllegalArgumentException("Your First or Last Name is empty, please check again");
@@ -81,7 +86,7 @@ public class UserEntity {
         }
         this.address = address;
 }
-
+    //
     private RuleResult getRuleResult(String password) {
         PasswordValidator passwordValidator = new PasswordValidator(Arrays.asList(
                 // Length rule: Must be between 8 and 30 characters

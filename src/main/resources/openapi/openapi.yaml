@@ -1,112 +1,332 @@
 openapi: 3.0.3
 info:
   title: Apple Store API
-  description: iStore REST API - Challenge 1 Blueprint
+  description: API Document for the Applestore project based on the ERD.
   version: 1.0.0
 
 servers:
   - url: http://localhost:8080
-    description: Local development
+    description: Local development server
 
 tags:
+  - name: Users
+    description: User management
   - name: Products
-    description: Product catalog endpoints (contract-first demo)
+    description: Product management
+  - name: Orders
+    description: Order management
 
 paths:
-  /api/v1/products:
+  # ==========================================
+  # USERS API (CRUD)
+  # ==========================================
+  /api/v1/users:
     get:
-      tags:
-        - Products
-      summary: Get all products
-      operationId: getAllProducts
+      tags: [Users]
+      summary: Get all users
+      operationId: getAllUsers
       responses:
-        "200":
-          description: List of products
+        '200':
+          description: Success
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ProductDTO"
+                  $ref: '#/components/schemas/ResponseUserDTO'
     post:
-      tags:
-        - Products
-      summary: Create a product
+      tags: [Users]
+      summary: Create a new user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUserDTO'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserDTO'
+
+  /api/v1/users/{id}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserDTO'
+    put:
+      tags: [Users]
+      summary: Update user
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUserDTO'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserDTO'
+    delete:
+      tags: [Users]
+      summary: Delete user
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted successfully (No Content)
+
+  # ==========================================
+  # PRODUCTS API (CRUD)
+  # ==========================================
+  /api/v1/products:
+    get:
+      tags: [Products]
+      summary: Get all products
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseProductDTO'
+    post:
+      tags: [Products]
+      summary: Create a new product
       operationId: createProduct
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ProductCreateDTO"
+              $ref: '#/components/schemas/RequestProductDTO'
       responses:
-        "201":
-          description: Product created
+        '201':
+          description: Created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProductDTO"
+                $ref: '#/components/schemas/ResponseProductDTO'
 
+  /api/v1/products/{id}:
+    get:
+      tags: [Products]
+      summary: Get product by ID
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseProductDTO'
+    put:
+      tags: [Products]
+      summary: Update product
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestProductDTO'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseProductDTO'
+    delete:
+      tags: [Products]
+      summary: Delete product
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted successfully (No Content)
+
+  # ==========================================
+  # ORDERS API (CRUD)
+  # ==========================================
+  /api/v1/orders:
+    get:
+      tags: [Orders]
+      summary: Get all orders
+      operationId: getAllOrders
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseOrderDTO'
+    post:
+      tags: [Orders]
+      summary: Place a new order (Create Order with OrderItems)
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestOrderDTO'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOrderDTO'
+
+  /api/v1/orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Get order details by ID
+      operationId: getOrderById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOrderDTO'
+    put:
+      tags: [Orders]
+      summary: Update order status
+      operationId: updateOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestOrderDTO'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOrderDTO'
+    delete:
+      tags: [Orders]
+      summary: Delete or cancel order
+      operationId: deleteOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted successfully (No Content)
+
+# ==========================================
+# SCHEMAS (DTOs)
+# ==========================================
 components:
   schemas:
-    ProductDTO:
+    # --- USER DTOs ---
+    RequestUserDTO:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        name:
+        email:
           type: string
-          example: iPhone 16 Pro
-        description:
+          format: email
+        password:
           type: string
-          example: Latest Apple smartphone
-        price:
-          type: number
-          format: double
-          example: 999.99
-        stockQuantity:
-          type: integer
-          format: int32
-          example: 50
-      required:
-        - name
-        - price
-        - stockQuantity
+        first_name:
+          type: string
+        last_name:
+          type: string
+        address:
+          type: string
+      required: [email, password, first_name, last_name]
 
-    ProductCreateDTO:
+    ResponseUserDTO:
       type: object
-      properties:
-        name:
-          type: string
-          example: iPhone 16 Pro
-        description:
-          type: string
-          example: Latest Apple smartphone
-        price:
-          type: number
-          format: double
-          example: 999.99
-        stockQuantity:
-          type: integer
-          format: int32
-          example: 50
-      required:
-        - name
-        - price
-        - stockQuantity
-
-    UserDTO:
-      type: object
-      description: User profile (documented for frontend; implemented separately)
+      description: Note - Never return the password to the client.
       properties:
         id:
           type: integer
           format: int64
         email:
           type: string
-          format: email
         first_name:
           type: string
         last_name:
@@ -114,49 +334,70 @@ components:
         address:
           type: string
 
-    CategoryDTO:
+    # --- CATEGORY DTOs (Used in Product) ---
+    ResponseCategoryDTO:
       type: object
-      description: Product category
       properties:
         id:
-          type: integer
-          format: int64
+          type: string # Noted as String in ERD. Change to integer if required.
         name:
           type: string
         description:
           type: string
 
-    OrderDTO:
+    # --- PRODUCT DTOs ---
+    RequestProductDTO:
       type: object
-      description: Customer order
       properties:
-        id:
-          type: integer
-          format: int64
-        userId:
-          type: integer
-          format: int64
-        status:
+        category_id:
+          type: string # Note: ERD indicates Category id is a String.
+        name:
           type: string
-          enum: [PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED]
-        order_date:
-          type: string
-          format: date-time
-        total_amount:
+        price:
           type: number
           format: double
+        stock_quantity:
+          type: integer
+          format: int32
+      required: [category_id, name, price, stock_quantity]
 
-    OrderItemDTO:
+    ResponseProductDTO:
       type: object
-      description: Line item inside an order
       properties:
         id:
           type: integer
           format: int64
-        orderId:
+        category:
+          $ref: '#/components/schemas/ResponseCategoryDTO' # Embed Category information for easier frontend usage.
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        stock_quantity:
+          type: integer
+          format: int32
+
+    # --- ORDER ITEM DTOs ---
+    RequestOrderItemDTO:
+      type: object
+      description: When placing an order, the frontend only needs to send the product ID and quantity.
+      properties:
+        product_id:
           type: integer
           format: int64
-        productId:
+        quantity:
+          type: integer
+          format: int32
+      required: [product_id, quantity]
+
+    ResponseOrderItemDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        product_id:
           type: integer
           format: int64
         quantity:
@@ -165,3 +406,40 @@ components:
         unit_price:
           type: number
           format: double
+
+    # --- ORDER DTOs ---
+    RequestOrderDTO:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          description: This field can be omitted if the backend extracts user_id directly from the JWT Token.
+        order_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestOrderItemDTO'
+      required: [user_id, order_items]
+
+    ResponseOrderDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        order_date:
+          type: string
+          format: date-time
+        total_amount:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: [PENDING, SHIPPED, DELIVERED]
+        order_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseOrderItemDTO'
