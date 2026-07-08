@@ -1,0 +1,25 @@
+<article class="product-card">
+  <div class="product-card__icon">
+    {{ categoryIcon(product().category?.name) }}
+  </div>
+
+  <div class="product-card__body">
+    @if (product().category?.name) {
+      <p class="product-card__category">{{ product().category!.name }}</p>
+    }
+
+    <h3 class="product-card__name">{{ product().name }}</h3>
+
+    <p class="product-card__price">
+      From {{ product().price | currency: 'USD' : 'symbol' : '1.0-0' }}
+    </p>
+
+    <p class="product-card__stock">
+      @if (product().stock_quantity > 0) {
+        {{ product().stock_quantity }} in stock
+      } @else {
+        Out of stock
+      }
+    </p>
+  </div>
+</article>
