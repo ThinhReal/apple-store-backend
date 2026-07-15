@@ -1,1 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-cream: #fff9ee;
+  --color-cream-dark: #f5edd8;
+  --color-brown: #5d4037;
+  --color-brown-light: #8d6e63;
+  --color-brown-dark: #3e2723;
+  --color-terracotta: #d84315;
+  --color-terracotta-light: #ff7043;
+  --color-terracotta-dark: #bf360c;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-cream);
+  color: var(--color-brown);
+  margin: 0;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  opacity: 0;
+}

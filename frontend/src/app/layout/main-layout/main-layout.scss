@@ -2,8 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f9fafb;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-cream);
+  font-family: var(--font-body);
 }
 
 .header {
@@ -14,9 +14,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  background: #000;
-  color: #fff;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  background: var(--color-brown-dark);
+  color: var(--color-cream);
+  box-shadow: 0 4px 12px rgb(62 39 35 / 25%);
 }
 
 .header__brand {
@@ -31,6 +31,7 @@
 
 .header__title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -47,11 +48,11 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
-  color: #fff;
+  color: var(--color-cream);
   transition: color 0.2s ease;
 
   &:hover {
-    color: #9ca3af;
+    color: var(--color-terracotta-light);
   }
 }
 
@@ -65,14 +66,14 @@
 
 .footer {
   padding: 2rem 1rem;
-  border-top: 1px solid #e5e7eb;
-  background: #fff;
+  border-top: 1px solid var(--color-cream-dark);
+  background: var(--color-cream-dark);
   text-align: center;
 
   p {
     margin: 0;
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--color-brown-light);
   }
 }
 
