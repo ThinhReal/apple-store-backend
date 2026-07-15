@@ -1,0 +1,55 @@
+<nav class="navbar">
+  <div class="navbar__inner">
+    <button type="button" class="navbar__brand" (click)="navigate('')">
+      <span class="navbar__logo">🍎</span>
+      <span class="navbar__title">Grove &amp; Root</span>
+    </button>
+
+    <div class="navbar__links navbar__links--desktop">
+      @for (link of navLinks; track link.path) {
+        <button
+          type="button"
+          class="navbar__link"
+          [class.navbar__link--active]="isActive(link.path)"
+          (click)="navigate(link.path)"
+        >
+          {{ link.label }}
+          @if (isActive(link.path)) {
+            <span class="navbar__link-indicator"></span>
+          }
+        </button>
+      }
+    </div>
+
+    <div class="navbar__actions">
+      <button type="button" class="navbar__cta" (click)="navigate('products')">
+        Shop Now
+      </button>
+
+      <button
+        type="button"
+        class="navbar__mobile-toggle"
+        (click)="toggleMobile()"
+        [attr.aria-label]="mobileOpen() ? 'Close menu' : 'Open menu'"
+        [attr.aria-expanded]="mobileOpen()"
+      >
+        {{ mobileOpen() ? '✕' : '☰' }}
+      </button>
+    </div>
+  </div>
+
+  @if (mobileOpen()) {
+    <div class="navbar__mobile">
+      @for (link of navLinks; track link.path) {
+        <button
+          type="button"
+          class="navbar__mobile-link"
+          [class.navbar__mobile-link--active]="isActive(link.path)"
+          (click)="navigate(link.path)"
+        >
+          {{ link.label }}
+        </button>
+      }
+    </div>
+  }
+</nav>

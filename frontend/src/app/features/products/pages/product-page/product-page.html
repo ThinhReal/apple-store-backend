@@ -1,0 +1,98 @@
+<div class="products-page">
+  <header class="products-page__header">
+    <div class="products-page__header-inner">
+      <span class="products-page__eyebrow">Shop</span>
+      <h1 class="products-page__title">All Products</h1>
+      <p class="products-page__subtitle">
+        Free shipping on orders over $65. All orders ship Monday–Wednesday for freshest delivery.
+      </p>
+
+      @if (!loading() && !error()) {
+        <div class="products-page__filters">
+          @for (category of categories(); track category) {
+            <button
+              type="button"
+              class="products-page__filter"
+              [class.products-page__filter--active]="activeCategory() === category"
+              (click)="setCategory(category)"
+            >
+              {{ category }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </header>
+
+  <section class="products-page__grid-section">
+    <div class="products-page__grid-inner">
+      @if (loading()) {
+        <div class="products-page__state">Loading products...</div>
+      } @else if (error()) {
+        <div class="products-page__state products-page__state--error">
+          <p>{{ error() }}</p>
+          <button type="button" class="products-page__retry" (click)="loadProducts()">Try again</button>
+        </div>
+      } @else if (filteredProducts().length === 0) {
+        <div class="products-page__state">No products found. Add some in the backend first.</div>
+      } @else {
+        @if (cart().size > 0) {
+          <div class="products-page__cart-banner">
+            <span class="products-page__cart-text">
+              🛒 {{ cart().size }} item{{ cart().size > 1 ? 's' : '' }} in your cart
+            </span>
+            <button type="button" class="products-page__checkout">Checkout</button>
+          </div>
+        }
+
+        <div class="products-page__grid">
+          @for (product of filteredProducts(); track product.id) {
+            <article class="product-item">
+              <div class="product-item__media">
+                <img [src]="productImage(product)" [alt]="product.name" class="product-item__image" />
+
+                @if (productBadge(product); as badge) {
+                  <span class="product-item__badge">{{ badge }}</span>
+                }
+
+                <button
+                  type="button"
+                  class="product-item__wishlist"
+                  (click)="toggleWishlist(product.id, $event)"
+                  [attr.aria-label]="isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'"
+                >
+                  {{ isInWishlist(product.id) ? '❤️' : '🤍' }}
+                </button>
+              </div>
+
+              <div class="product-item__body">
+                @if (product.category?.name) {
+                  <div class="product-item__category">{{ product.category!.name }}</div>
+                }
+
+                <h3 class="product-item__name">{{ product.name }}</h3>
+                <p class="product-item__flavor">{{ stockLabel(product) }}</p>
+
+                <div class="product-item__footer">
+                  <div class="product-item__price-wrap">
+                    <span class="product-item__price">{{ product.price | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="product-item__cart-btn"
+                    [class.product-item__cart-btn--added]="isInCart(product.id)"
+                    [disabled]="product.stock_quantity === 0"
+                    (click)="toggleCart(product.id)"
+                  >
+                    {{ isInCart(product.id) ? '✓ Added' : 'Add to Cart' }}
+                  </button>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</div>

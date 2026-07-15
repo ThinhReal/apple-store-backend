@@ -1,0 +1,50 @@
+<section class="hero">
+  <div class="hero__image" aria-hidden="true"></div>
+  <div class="hero__gradient" aria-hidden="true"></div>
+
+  <div class="hero__content">
+    <div class="hero__copy">
+      <div class="hero__badge">
+        <span class="hero__badge-icon">🍏</span>
+        <span class="hero__badge-text">Harvest Season 2025</span>
+      </div>
+
+      <h1 class="hero__title">
+        From Our<br />
+        <em class="hero__title-accent">Orchard</em><br />
+        to Your Table
+      </h1>
+
+      <p class="hero__description">
+        Handpicked heirloom apples, grown with care in the foothills of Vermont. Crisp, complex, and
+        delivered at peak ripeness — every variety tells a story.
+      </p>
+
+      <div class="hero__actions">
+        <button type="button" class="hero__cta hero__cta--primary" (click)="navigate('products')">
+          Shop the Harvest
+        </button>
+        <button type="button" class="hero__cta hero__cta--secondary" (click)="navigate('about')">
+          Our Story
+        </button>
+      </div>
+    </div>
+
+    <div class="hero__pills">
+      @for (item of quickNav; track item.path) {
+        <button type="button" class="hero__pill" (click)="navigate(item.path)">
+          ↓ {{ item.label }}
+        </button>
+      }
+    </div>
+
+    <div class="hero__stats">
+      @for (stat of stats; track stat.label) {
+        <div class="hero__stat">
+          <div class="hero__stat-num">{{ stat.num }}</div>
+          <div class="hero__stat-label">{{ stat.label }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
