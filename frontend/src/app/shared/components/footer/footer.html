@@ -26,7 +26,11 @@
           <ul class="footer__links">
             @for (link of section.links; track link.label) {
               <li>
-                <button type="button" class="footer__link" (click)="navigate(link.path)">
+                <button
+                  type="button"
+                  class="footer__link"
+                  (click)="navigate(link.path, link.queryParams)"
+                >
                   {{ link.label }}
                 </button>
               </li>
@@ -42,8 +46,10 @@
       </span>
 
       <div class="footer__legal">
-        @for (item of legalLinks; track item) {
-          <button type="button" class="footer__legal-link">{{ item }}</button>
+        @for (item of legalLinks; track item.label) {
+          <button type="button" class="footer__legal-link" (click)="navigate(item.path)">
+            {{ item.label }}
+          </button>
         }
       </div>
     </div>

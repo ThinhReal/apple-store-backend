@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 export interface NavLink {
   label: string;
@@ -16,6 +17,7 @@ export class Navbar {
   private readonly router = inject(Router);
 
   mobileOpen = signal(false);
+  private readonly currentPath = signal(this.getPathname(this.router.url));
 
   readonly navLinks: NavLink[] = [
     { label: 'Home', path: '' },
@@ -24,6 +26,15 @@ export class Navbar {
     { label: 'Recipes', path: 'recipes' },
     { label: 'About', path: 'about' },
   ];
+
+  constructor() {
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.currentPath.set(this.getPathname(event.urlAfterRedirects));
+        this.mobileOpen.set(false);
+      });
+  }
 
   toggleMobile(): void {
     this.mobileOpen.update((open) => !open);
@@ -35,12 +46,16 @@ export class Navbar {
   }
 
   isActive(path: string): boolean {
-    const url = this.router.url;
+    const url = this.currentPath();
 
     if (path === '') {
       return url === '/' || url === '';
     }
 
     return url === `/${path}` || url.startsWith(`/${path}/`);
+  }
+
+  private getPathname(url: string): string {
+    return url.split('?')[0].split('#')[0];
   }
 }

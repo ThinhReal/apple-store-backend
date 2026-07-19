@@ -28,8 +28,8 @@ export class Hero {
   ];
 
   readonly stats: HeroStat[] = [
-    { num: '40+', label: 'Apple Varieties' },
-    { num: '1892', label: 'Est. Year' },
+    { num: '20+', label: 'Apple Varieties' },
+    { num: '2006', label: 'Est. Year' },
     { num: '100%', label: 'Organic Grown' },
   ];
 

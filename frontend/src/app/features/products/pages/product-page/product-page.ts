@@ -1,5 +1,6 @@
 import { CurrencyPipe, DOCUMENT } from '@angular/common';
 import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { ProductDetailModal } from '../../../../shared/components/product-detail-modal/product-detail-modal';
 import { Product } from '../../../../shared/models/product.model';
@@ -15,6 +16,7 @@ import { ProductService } from '../../services/product.service';
 export class ProductPage {
   private readonly productService = inject(ProductService);
   private readonly document = inject(DOCUMENT);
+  private readonly route = inject(ActivatedRoute);
 
   products = signal<Product[]>([]);
   loading = signal(true);
@@ -55,6 +57,7 @@ export class ProductPage {
     this.productService.getAllProducts().subscribe({
       next: (products) => {
         this.products.set(products);
+        this.applyCategoryFromQuery();
         this.loading.set(false);
       },
       error: () => {
@@ -177,6 +180,20 @@ export class ProductPage {
     }
 
     return 'each';
+  }
+
+  private applyCategoryFromQuery(): void {
+    const category = this.route.snapshot.queryParamMap.get('category');
+
+    if (!category) {
+      return;
+    }
+
+    const availableCategories = this.categories();
+
+    if (availableCategories.includes(category)) {
+      this.activeCategory.set(category);
+    }
   }
 
   private updateProductInList(updated: Product): void {
