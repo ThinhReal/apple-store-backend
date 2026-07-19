@@ -13,7 +13,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Apple Store API")
-                        .description("iStore REST API - Challenge 1 Blueprint")
+                        .description("API Document for the Applestore project based on the ERD.")
                         .version("1.0.0"));
     }
 }

@@ -6,6 +6,7 @@ import com.thinhreal.applestore.exception.BusinessException;
 import com.thinhreal.applestore.model.entity.CategoryEntity;
 import com.thinhreal.applestore.repository.CategoryRepository;
 import com.thinhreal.applestore.repository.ProductRepository;
+import com.thinhreal.applestore.util.ApiIdConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,24 +30,27 @@ public class CategoryService {
         return toDto(saved);
     }
 
-    public ResponseCategoryDTO getCategoryById(Long id) {
-        CategoryEntity entity = categoryRepository.findById(id)
+    public ResponseCategoryDTO getCategoryById(String id) {
+        Long categoryId = ApiIdConverter.parseLongId(id, "category");
+        CategoryEntity entity = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException("Cannot find category with id: " + id));
         return toDto(entity);
     }
 
-    public ResponseCategoryDTO updateCategory(Long id, RequestCategoryDTO requestCategoryDTO) {
-        CategoryEntity entity = categoryRepository.findById(id)
+    public ResponseCategoryDTO updateCategory(String id, RequestCategoryDTO requestCategoryDTO) {
+        Long categoryId = ApiIdConverter.parseLongId(id, "category");
+        CategoryEntity entity = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException("Cannot find category with id: " + id));
         applyDto(entity, requestCategoryDTO);
         CategoryEntity saved = categoryRepository.save(entity);
         return toDto(saved);
     }
 
-    public void deleteCategory(Long id) {
-        CategoryEntity entity = categoryRepository.findById(id)
+    public void deleteCategory(String id) {
+        Long categoryId = ApiIdConverter.parseLongId(id, "category");
+        CategoryEntity entity = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException("Cannot find category with id: " + id));
-        if (productRepository.existsByCategory_Id(id)) {
+        if (productRepository.existsByCategory_Id(categoryId)) {
             throw new BusinessException("Cannot delete category with existing products");
         }
         categoryRepository.delete(entity);
@@ -54,7 +58,7 @@ public class CategoryService {
 
     private ResponseCategoryDTO toDto(CategoryEntity entity) {
         ResponseCategoryDTO dto = new ResponseCategoryDTO();
-        dto.setId(entity.getId());
+        dto.setId(ApiIdConverter.toApiId(entity.getId()));
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
         return dto;

@@ -2,6 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 import { Product } from '../../models/product.model';
+import { getProductImageUrl } from '../../utils/product-image.util';
 
 @Component({
   selector: 'app-product-card',
@@ -12,15 +13,7 @@ import { Product } from '../../models/product.model';
 export class ProductCard {
   product = input.required<Product>();
 
-  categoryIcon(categoryName?: string): string {
-    const name = categoryName?.toLowerCase() ?? '';
-
-    if (name.includes('iphone') || name.includes('phone')) return '📱';
-    if (name.includes('mac') || name.includes('laptop')) return '💻';
-    if (name.includes('ipad') || name.includes('tablet')) return '📟';
-    if (name.includes('watch')) return '⌚';
-    if (name.includes('airpod') || name.includes('audio')) return '🎧';
-
-    return '🍎';
+  productImage(): string {
+    return getProductImageUrl(this.product());
   }
 }

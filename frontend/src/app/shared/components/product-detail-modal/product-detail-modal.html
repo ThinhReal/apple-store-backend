@@ -1,0 +1,169 @@
+<div class="product-modal" (click)="onBackdropClick()" role="dialog" aria-modal="true" [attr.aria-label]="product().name">
+  <div class="product-modal__panel" (click)="onPanelClick($event)">
+    <div class="product-modal__media">
+      <img [src]="detailImage()" [alt]="product().name" class="product-modal__image" />
+
+      @if (badge()) {
+        <span class="product-modal__badge">{{ badge() }}</span>
+      }
+
+      <button
+        type="button"
+        class="product-modal__wishlist"
+        (click)="onWishlistClick($event)"
+        [attr.aria-label]="inWishlist() ? 'Remove from wishlist' : 'Add to wishlist'"
+      >
+        {{ inWishlist() ? '❤️' : '🤍' }}
+      </button>
+    </div>
+
+    <div class="product-modal__content">
+      <button type="button" class="product-modal__close" (click)="close.emit()" aria-label="Close product details">
+        ✕
+      </button>
+
+      @if (loading()) {
+        <p class="product-modal__loading">Loading product details...</p>
+      }
+
+      @if (product().category?.name) {
+        <div class="product-modal__category">{{ product().category!.name }}</div>
+      }
+
+      @if (product().category?.description) {
+        <p class="product-modal__category-desc">{{ product().category!.description }}</p>
+      }
+
+      <h2 class="product-modal__title">{{ product().name }}</h2>
+
+      @if (flavorLabel()) {
+        <p class="product-modal__flavor">{{ flavorLabel() }}</p>
+      }
+
+      <p class="product-modal__description">
+        {{ product().description || '—' }}
+      </p>
+
+      @if (hasFlavorProfile()) {
+        <div class="product-modal__section">
+          <h4 class="product-modal__section-title">Flavor Profile</h4>
+
+          @if (product().flavor_profile?.overall_profile) {
+            <p class="product-modal__text">{{ product().flavor_profile!.overall_profile }}</p>
+          }
+
+          @if (product().flavor_profile?.tasting_description) {
+            <p class="product-modal__text product-modal__text--muted">
+              {{ product().flavor_profile!.tasting_description }}
+            </p>
+          }
+
+          <div class="product-modal__levels">
+            <div class="product-modal__level">
+              <span class="product-modal__meta-label">Sweetness</span>
+              <span class="product-modal__meta-value">
+                {{ displayValue(product().flavor_profile?.sweetness_level) }}
+              </span>
+            </div>
+            <div class="product-modal__level">
+              <span class="product-modal__meta-label">Tartness</span>
+              <span class="product-modal__meta-value">
+                {{ displayValue(product().flavor_profile?.tartness_level) }}
+              </span>
+            </div>
+          </div>
+
+          @if ((product().flavor_profile?.dominant_notes?.length ?? 0) > 0) {
+            <div class="product-modal__tags product-modal__tags--spaced">
+              @for (note of product().flavor_profile!.dominant_notes!; track note) {
+                <span class="product-modal__tag product-modal__tag--accent">{{ note }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <div class="product-modal__section">
+        <h4 class="product-modal__section-title">Tasting Notes</h4>
+        @if ((product().tasting_notes?.length ?? 0) > 0) {
+          <div class="product-modal__tags">
+            @for (note of product().tasting_notes!; track note) {
+              <span class="product-modal__tag product-modal__tag--accent">{{ note }}</span>
+            }
+          </div>
+        } @else {
+          <p class="product-modal__empty">—</p>
+        }
+      </div>
+
+      <div class="product-modal__section">
+        <h4 class="product-modal__section-title">Best For</h4>
+        @if ((product().best_for?.length ?? 0) > 0) {
+          <div class="product-modal__tags">
+            @for (use of product().best_for!; track use) {
+              <span class="product-modal__tag">{{ use }}</span>
+            }
+          </div>
+        } @else {
+          <p class="product-modal__empty">—</p>
+        }
+      </div>
+
+      <div class="product-modal__meta">
+        <div>
+          <div class="product-modal__meta-label">Product ID</div>
+          <div class="product-modal__meta-value">{{ displayValue(product().id) }}</div>
+        </div>
+        <div>
+          <div class="product-modal__meta-label">Category ID</div>
+          <div class="product-modal__meta-value">{{ displayValue(product().category?.id) }}</div>
+        </div>
+        <div>
+          <div class="product-modal__meta-label">Stock</div>
+          <div class="product-modal__meta-value">{{ product().stock_quantity }} in stock</div>
+        </div>
+        <div>
+          <div class="product-modal__meta-label">Origin</div>
+          <div class="product-modal__meta-value">{{ displayValue(product().origin) }}</div>
+        </div>
+        <div>
+          <div class="product-modal__meta-label">Season</div>
+          <div class="product-modal__meta-value">{{ displayValue(product().season) }}</div>
+        </div>
+        <div>
+          <div class="product-modal__meta-label">Added</div>
+          <div class="product-modal__meta-value">
+            @if (product().created_at) {
+              {{ product().created_at | date: 'medium' }}
+            } @else {
+              —
+            }
+          </div>
+        </div>
+        <div>
+          <div class="product-modal__meta-label">Image URL</div>
+          <div class="product-modal__meta-value product-modal__meta-value--truncate">
+            {{ displayValue(product().image_url) }}
+          </div>
+        </div>
+      </div>
+
+      <div class="product-modal__footer">
+        <div class="product-modal__price-wrap">
+          <span class="product-modal__price">${{ product().price.toFixed(2) }}</span>
+          <span class="product-modal__weight">/ {{ weightLabel() }}</span>
+        </div>
+
+        <button
+          type="button"
+          class="product-modal__cart-btn"
+          [class.product-modal__cart-btn--added]="inCart()"
+          [disabled]="product().stock_quantity === 0"
+          (click)="addToCart.emit()"
+        >
+          {{ inCart() ? '✓ Added to Cart' : 'Add to Cart' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

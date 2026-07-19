@@ -1,44 +1,45 @@
 package com.thinhreal.applestore.controller;
 
-import com.thinhreal.applestore.model.dto.user.RequestUserDTO;
-import com.thinhreal.applestore.model.dto.user.ResponseUserDTO;
-import com.thinhreal.applestore.model.entity.UserEntity;
+import com.thinhreal.applestore.api.UsersApi;
+import com.thinhreal.applestore.api.model.RequestUserDTO;
+import com.thinhreal.applestore.api.model.ResponseUserDTO;
 import com.thinhreal.applestore.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RequestMapping("/api/v1/users")
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UsersApi {
+
     private final UserService userService;
 
-    @PostMapping
-    public ResponseUserDTO createUser(@RequestBody RequestUserDTO req) {
-        return userService.createUser(req);
-    }
-    @GetMapping
-    public List<ResponseUserDTO> getAllUser() {
-        return userService.getAllUser();
-    }
-    @GetMapping("/{id}")
-    public ResponseUserDTO getUserById(@PathVariable Long id){
-        return userService.getUserById(id);
-    }
-    @PatchMapping("/{id}")
-    public ResponseUserDTO updateUser(@PathVariable Long id,@RequestBody RequestUserDTO req){
-        return userService.updateUser(id, req);
+    @Override
+    public ResponseEntity<ResponseUserDTO> createUser(RequestUserDTO requestUserDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(requestUserDTO));
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        return userService.deleteUser(id);
+    @Override
+    public ResponseEntity<List<ResponseUserDTO>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @Override
+    public ResponseEntity<ResponseUserDTO> getUserById(Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
 
+    @Override
+    public ResponseEntity<ResponseUserDTO> updateUser(Long id, RequestUserDTO requestUserDTO) {
+        return ResponseEntity.ok(userService.updateUser(id, requestUserDTO));
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteUser(Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
 }

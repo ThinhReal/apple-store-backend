@@ -34,7 +34,6 @@ export class Hero {
   ];
 
   navigate(path: string): void {
-    const segments = path === '' ? [] : [path];
-    this.router.navigate(segments);
+    this.router.navigate(path === '' ? ['/'] : ['/', path]);
   }
 }

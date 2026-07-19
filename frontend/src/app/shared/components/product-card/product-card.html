@@ -1,6 +1,6 @@
 <article class="product-card">
-  <div class="product-card__icon">
-    {{ categoryIcon(product().category?.name) }}
+  <div class="product-card__media">
+    <img [src]="productImage()" [alt]="product().name" class="product-card__image" loading="lazy" />
   </div>
 
   <div class="product-card__body">

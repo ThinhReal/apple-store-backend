@@ -47,9 +47,14 @@
 
         <div class="products-page__grid">
           @for (product of filteredProducts(); track product.id) {
-            <article class="product-item">
+            <article class="product-item" (click)="openProduct(product)">
               <div class="product-item__media">
-                <img [src]="productImage(product)" [alt]="product.name" class="product-item__image" />
+                <img
+                  [src]="productImage(product)"
+                  [alt]="product.name"
+                  class="product-item__image"
+                  loading="lazy"
+                />
 
                 @if (productBadge(product); as badge) {
                   <span class="product-item__badge">{{ badge }}</span>
@@ -71,7 +76,7 @@
                 }
 
                 <h3 class="product-item__name">{{ product.name }}</h3>
-                <p class="product-item__flavor">{{ stockLabel(product) }}</p>
+                <p class="product-item__flavor">{{ productFlavorLabel(product) }}</p>
 
                 <div class="product-item__footer">
                   <div class="product-item__price-wrap">
@@ -83,7 +88,7 @@
                     class="product-item__cart-btn"
                     [class.product-item__cart-btn--added]="isInCart(product.id)"
                     [disabled]="product.stock_quantity === 0"
-                    (click)="toggleCart(product.id)"
+                    (click)="toggleCart(product.id, $event)"
                   >
                     {{ isInCart(product.id) ? '✓ Added' : 'Add to Cart' }}
                   </button>
@@ -96,3 +101,19 @@
     </div>
   </section>
 </div>
+
+@if (selectedProduct(); as product) {
+  <app-product-detail-modal
+    [product]="product"
+    [detailImage]="productImage(product, true)"
+    [badge]="productBadge(product)"
+    [flavorLabel]="productFlavorLabel(product)"
+    [weightLabel]="productWeightLabel(product)"
+    [loading]="detailLoading()"
+    [inCart]="isInCart(product.id)"
+    [inWishlist]="isInWishlist(product.id)"
+    (close)="closeProduct()"
+    (toggleWishlist)="toggleWishlist(product.id)"
+    (addToCart)="toggleCart(product.id)"
+  />
+}

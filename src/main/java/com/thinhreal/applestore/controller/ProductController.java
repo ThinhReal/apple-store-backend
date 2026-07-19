@@ -28,17 +28,17 @@ public class ProductController implements ProductsApi {
     }
 
     @Override
-    public ResponseEntity<ResponseProductDTO> getProductById(Long id) {
+    public ResponseEntity<ResponseProductDTO> getProductById(String id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
     @Override
-    public ResponseEntity<ResponseProductDTO> updateProduct(Long id, RequestProductDTO requestProductDTO) {
+    public ResponseEntity<ResponseProductDTO> updateProduct(String id, RequestProductDTO requestProductDTO) {
         return ResponseEntity.ok(productService.updateProduct(id, requestProductDTO));
     }
 
     @Override
-    public ResponseEntity<Void> deleteProduct(Long id) {
+    public ResponseEntity<Void> deleteProduct(String id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }

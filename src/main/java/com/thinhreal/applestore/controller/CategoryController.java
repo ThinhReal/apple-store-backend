@@ -28,17 +28,17 @@ public class CategoryController implements CategoriesApi {
     }
 
     @Override
-    public ResponseEntity<ResponseCategoryDTO> getCategoryById(Long id) {
+    public ResponseEntity<ResponseCategoryDTO> getCategoryById(String id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
     @Override
-    public ResponseEntity<ResponseCategoryDTO> updateCategory(Long id, RequestCategoryDTO requestCategoryDTO) {
+    public ResponseEntity<ResponseCategoryDTO> updateCategory(String id, RequestCategoryDTO requestCategoryDTO) {
         return ResponseEntity.ok(categoryService.updateCategory(id, requestCategoryDTO));
     }
 
     @Override
-    public ResponseEntity<Void> deleteCategory(Long id) {
+    public ResponseEntity<Void> deleteCategory(String id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }

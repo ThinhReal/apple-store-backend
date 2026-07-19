@@ -30,8 +30,7 @@ export class Navbar {
   }
 
   navigate(path: string): void {
-    const segments = path === '' ? [] : [path];
-    this.router.navigate(segments);
+    this.router.navigate(path === '' ? ['/'] : ['/', path]);
     this.mobileOpen.set(false);
   }
 

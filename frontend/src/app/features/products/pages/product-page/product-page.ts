@@ -1,27 +1,29 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DOCUMENT } from '@angular/common';
 import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 
-import { ProductService } from '../../services/product.service';
+import { ProductDetailModal } from '../../../../shared/components/product-detail-modal/product-detail-modal';
 import { Product } from '../../../../shared/models/product.model';
+import { getProductImageUrl } from '../../../../shared/utils/product-image.util';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-product-page',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, ProductDetailModal],
   templateUrl: './product-page.html',
   styleUrl: './product-page.scss',
 })
 export class ProductPage {
   private readonly productService = inject(ProductService);
-
-  private readonly defaultImage =
-    'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=500&h=500&fit=crop&auto=format';
+  private readonly document = inject(DOCUMENT);
 
   products = signal<Product[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   activeCategory = signal('All');
-  cart = signal<Set<number>>(new Set());
-  wishlist = signal<Set<number>>(new Set());
+  cart = signal<Set<string>>(new Set());
+  wishlist = signal<Set<string>>(new Set());
+  selectedProduct = signal<Product | null>(null);
+  detailLoading = signal(false);
 
   categories = computed(() => {
     const names = this.products()
@@ -66,56 +68,73 @@ export class ProductPage {
     this.activeCategory.set(category);
   }
 
-  toggleCart(id: number): void {
+  openProduct(product: Product): void {
+    this.document.body.style.overflow = 'hidden';
+    this.selectedProduct.set(product);
+    this.detailLoading.set(true);
+
+    this.productService.getProductById(product.id).subscribe({
+      next: (fullProduct) => {
+        this.selectedProduct.set(fullProduct);
+        this.updateProductInList(fullProduct);
+        this.detailLoading.set(false);
+      },
+      error: () => {
+        this.detailLoading.set(false);
+      },
+    });
+  }
+
+  closeProduct(): void {
+    this.selectedProduct.set(null);
+    this.detailLoading.set(false);
+    this.document.body.style.overflow = '';
+  }
+
+  toggleCart(id: Product['id'], event?: Event): void {
+    event?.stopPropagation();
+    const key = this.productKey(id);
+
     this.cart.update((current) => {
       const next = new Set(current);
 
-      if (next.has(id)) {
-        next.delete(id);
+      if (next.has(key)) {
+        next.delete(key);
       } else {
-        next.add(id);
+        next.add(key);
       }
 
       return next;
     });
   }
 
-  toggleWishlist(id: number, event: Event): void {
-    event.stopPropagation();
+  toggleWishlist(id: Product['id'], event?: Event): void {
+    event?.stopPropagation();
+    const key = this.productKey(id);
 
     this.wishlist.update((current) => {
       const next = new Set(current);
 
-      if (next.has(id)) {
-        next.delete(id);
+      if (next.has(key)) {
+        next.delete(key);
       } else {
-        next.add(id);
+        next.add(key);
       }
 
       return next;
     });
   }
 
-  isInCart(id: number): boolean {
-    return this.cart().has(id);
+  isInCart(id: Product['id']): boolean {
+    return this.cart().has(this.productKey(id));
   }
 
-  isInWishlist(id: number): boolean {
-    return this.wishlist().has(id);
+  isInWishlist(id: Product['id']): boolean {
+    return this.wishlist().has(this.productKey(id));
   }
 
-  productImage(product: Product): string {
-    const categoryName = product.category?.name?.toLowerCase() ?? '';
-
-    if (categoryName.includes('cider') || categoryName.includes('juice')) {
-      return 'https://images.unsplash.com/photo-1535914254981-b5012eebbd15?w=500&h=500&fit=crop&auto=format';
-    }
-
-    if (categoryName.includes('gift')) {
-      return 'https://images.unsplash.com/photo-1510627489930-0c1b0bfb6785?w=500&h=500&fit=crop&auto=format';
-    }
-
-    return this.defaultImage;
+  productImage(product: Product, detail = false): string {
+    return getProductImageUrl(product, detail);
   }
 
   productBadge(product: Product): string | null {
@@ -136,5 +155,37 @@ export class ProductPage {
     }
 
     return `${product.stock_quantity} in stock`;
+  }
+
+  productFlavorLabel(product: Product): string {
+    return (
+      product.flavor_profile?.overall_profile ??
+      product.flavor_profile?.tasting_description ??
+      ''
+    );
+  }
+
+  productWeightLabel(product: Product): string {
+    const categoryName = product.category?.name?.toLowerCase() ?? '';
+
+    if (categoryName.includes('cider') || categoryName.includes('juice')) {
+      return '750ml bottle';
+    }
+
+    if (categoryName.includes('gift')) {
+      return 'gift box';
+    }
+
+    return 'each';
+  }
+
+  private updateProductInList(updated: Product): void {
+    this.products.update((current) =>
+      current.map((product) => (String(product.id) === String(updated.id) ? updated : product))
+    );
+  }
+
+  private productKey(id: Product['id']): string {
+    return String(id);
   }
 }

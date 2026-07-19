@@ -80,10 +80,6 @@ public class UserEntity {
             throw new IllegalArgumentException("Password does not meet the criteria");
         }
 
-        // ADDRESS VALIDATION
-        if (address == null || address.trim().isEmpty()) {
-            throw new IllegalArgumentException("Your address is empty, please check again");
-        }
         this.address = address;
 }
     //

@@ -47,10 +47,10 @@ class CategoryServiceTest {
 
         // Then
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(0).getId()).isEqualTo("1");
         assertThat(result.get(0).getName()).isEqualTo("Smartphones");
         assertThat(result.get(0).getDescription()).isEqualTo("Mobile devices");
-        assertThat(result.get(1).getId()).isEqualTo(2L);
+        assertThat(result.get(1).getId()).isEqualTo("2");
         assertThat(result.get(1).getName()).isEqualTo("Laptops");
         verify(categoryRepository).findAll();
     }
@@ -73,7 +73,7 @@ class CategoryServiceTest {
         ResponseCategoryDTO result = categoryService.createCategory(request);
 
         // Then
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getId()).isEqualTo("1");
         assertThat(result.getName()).isEqualTo("Smartphones");
         assertThat(result.getDescription()).isEqualTo("Mobile devices");
 
@@ -90,10 +90,10 @@ class CategoryServiceTest {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(entity));
 
         // When
-        ResponseCategoryDTO result = categoryService.getCategoryById(1L);
+        ResponseCategoryDTO result = categoryService.getCategoryById("1");
 
         // Then
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getId()).isEqualTo("1");
         assertThat(result.getName()).isEqualTo("Smartphones");
         assertThat(result.getDescription()).isEqualTo("Mobile devices");
         verify(categoryRepository).findById(1L);
@@ -105,7 +105,7 @@ class CategoryServiceTest {
         when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
 
         // When / Then
-        assertThatThrownBy(() -> categoryService.getCategoryById(99L))
+        assertThatThrownBy(() -> categoryService.getCategoryById("99"))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("Cannot find category with id: 99");
 
@@ -123,10 +123,10 @@ class CategoryServiceTest {
         when(categoryRepository.save(existing)).thenReturn(updated);
 
         // When
-        ResponseCategoryDTO result = categoryService.updateCategory(1L, request);
+        ResponseCategoryDTO result = categoryService.updateCategory("1", request);
 
         // Then
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getId()).isEqualTo("1");
         assertThat(result.getName()).isEqualTo("Tablets");
         assertThat(result.getDescription()).isEqualTo("Tablet devices");
         verify(categoryRepository).findById(1L);
@@ -140,7 +140,7 @@ class CategoryServiceTest {
         when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
 
         // When / Then
-        assertThatThrownBy(() -> categoryService.updateCategory(99L, request))
+        assertThatThrownBy(() -> categoryService.updateCategory("99", request))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("Cannot find category with id: 99");
 
@@ -156,7 +156,7 @@ class CategoryServiceTest {
         when(productRepository.existsByCategory_Id(1L)).thenReturn(false);
 
         // When
-        categoryService.deleteCategory(1L);
+        categoryService.deleteCategory("1");
 
         // Then
         verify(categoryRepository).findById(1L);
@@ -170,7 +170,7 @@ class CategoryServiceTest {
         when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
 
         // When / Then
-        assertThatThrownBy(() -> categoryService.deleteCategory(99L))
+        assertThatThrownBy(() -> categoryService.deleteCategory("99"))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("Cannot find category with id: 99");
 
@@ -187,7 +187,7 @@ class CategoryServiceTest {
         when(productRepository.existsByCategory_Id(1L)).thenReturn(true);
 
         // When / Then
-        assertThatThrownBy(() -> categoryService.deleteCategory(1L))
+        assertThatThrownBy(() -> categoryService.deleteCategory("1"))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("Cannot delete category with existing products");
 

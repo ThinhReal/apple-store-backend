@@ -11,6 +11,7 @@ import com.thinhreal.applestore.model.enums.OrderStatus;
 import com.thinhreal.applestore.repository.OrderItemRepository;
 import com.thinhreal.applestore.repository.OrderRepository;
 import com.thinhreal.applestore.repository.ProductRepository;
+import com.thinhreal.applestore.util.ApiIdConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,8 +110,9 @@ public class OrderItemService {
         }
     }
 
-    private ProductEntity resolveProductWithStock(Long productId, Integer quantity) {
-        ProductEntity product = productRepository.findById(productId)
+    private ProductEntity resolveProductWithStock(String productId, Integer quantity) {
+        Long resolvedProductId = ApiIdConverter.parseLongId(productId, "product");
+        ProductEntity product = productRepository.findById(resolvedProductId)
                 .orElseThrow(() -> new BusinessException("Cannot find product with id: " + productId));
 
         if (quantity == null || quantity <= 0) {
@@ -150,7 +152,7 @@ public class OrderItemService {
         ResponseOrderItemDTO dto = new ResponseOrderItemDTO();
         dto.setId(entity.getId());
         if (entity.getProduct() != null) {
-            dto.setProductId(entity.getProduct().getId());
+            dto.setProductId(ApiIdConverter.toApiId(entity.getProduct().getId()));
         }
         dto.setQuantity(entity.getQuantity());
         dto.setUnitPrice(entity.getUnit_price());

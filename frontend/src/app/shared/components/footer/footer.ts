@@ -52,7 +52,7 @@ export class Footer {
   ];
 
   navigate(path: string): void {
-    const segments = path === '' || path === 'home' ? [] : [path];
-    this.router.navigate(segments);
+    const normalized = path === '' || path === 'home' ? '' : path;
+    this.router.navigate(normalized === '' ? ['/'] : ['/', normalized]);
   }
 }
