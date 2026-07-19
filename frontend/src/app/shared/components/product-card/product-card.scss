@@ -65,3 +65,17 @@
   font-size: 0.875rem;
   color: var(--color-brown-light);
 }
+
+@media (max-width: 480px) {
+  .product-card__media {
+    height: 12rem;
+  }
+
+  .product-card__body {
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+
+  .product-card__name {
+    font-size: 1.25rem;
+  }
+}

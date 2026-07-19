@@ -7,6 +7,7 @@
   background-color: rgb(255 249 238 / 92%);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgb(93 64 55 / 10%);
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 .navbar__inner {
@@ -154,5 +155,42 @@
 
   .navbar__mobile-toggle {
     display: block;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .navbar__link {
+    padding: 0.4375rem 0.625rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar__inner {
+    padding: 0 1rem;
+    height: 4rem;
+  }
+
+  .navbar__title {
+    font-size: 1.125rem;
+  }
+
+  .navbar__logo {
+    font-size: 1.5rem;
+  }
+
+  .navbar__cta {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .navbar__mobile {
+    padding: 0.75rem 1rem calc(1.25rem + env(safe-area-inset-bottom, 0));
+  }
+
+  .navbar__mobile-link {
+    min-height: 2.75rem;
   }
 }
