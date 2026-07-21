@@ -1,4 +1,4 @@
-# Grove & Root - Apple Store E-commerce
+# 🍎 Grove & Root - Apple Store E-commerce
 
 A full-stack e-commerce application for an artisan apple orchard storefront. Customers can browse products, manage a cart, and checkout securely. Admins can manage the product catalog and update customer order statuses.
 
