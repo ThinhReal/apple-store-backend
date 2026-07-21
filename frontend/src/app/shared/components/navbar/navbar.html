@@ -22,9 +22,21 @@
     </div>
 
     <div class="navbar__actions">
-      <button type="button" class="navbar__cta" (click)="navigate('products')">
-        Shop Now
-      </button>
+      <app-navbar-cart />
+
+      @if (authService.isAdmin()) {
+        <a class="navbar__link navbar__link--admin" routerLink="/admin/products">Admin</a>
+        <button type="button" class="navbar__logout" (click)="logout()">Logout</button>
+      } @else if (authService.isCustomer()) {
+        <a class="navbar__link navbar__link--account" routerLink="/orders" (click)="closeMobile()">My Orders</a>
+        <span class="navbar__user">{{ authService.currentUser()?.email }}</span>
+        <button type="button" class="navbar__logout" (click)="logout()">Logout</button>
+      } @else {
+        <a class="navbar__login" routerLink="/login" (click)="closeMobile()">Login</a>
+        <a class="navbar__signup" routerLink="/signup" (click)="closeMobile()">Sign Up</a>
+      }
+
+      <a class="navbar__cta" routerLink="/products" (click)="closeMobile()">Shop Now</a>
 
       <button
         type="button"
@@ -49,6 +61,18 @@
         >
           {{ link.label }}
         </button>
+      }
+
+      @if (authService.isAdmin()) {
+        <a class="navbar__mobile-link" routerLink="/admin/products" (click)="closeMobile()">Admin</a>
+        <button type="button" class="navbar__mobile-link" (click)="logout()">Logout</button>
+      } @else if (authService.isCustomer()) {
+        <a class="navbar__mobile-link" routerLink="/orders" (click)="closeMobile()">My Orders</a>
+        <span class="navbar__mobile-user">{{ authService.currentUser()?.email }}</span>
+        <button type="button" class="navbar__mobile-link" (click)="logout()">Logout</button>
+      } @else {
+        <a class="navbar__mobile-link" routerLink="/login" (click)="closeMobile()">Login</a>
+        <a class="navbar__mobile-link" routerLink="/signup" (click)="closeMobile()">Sign Up</a>
       }
     </div>
   }

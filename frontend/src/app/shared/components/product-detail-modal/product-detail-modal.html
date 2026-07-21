@@ -154,15 +154,34 @@
           <span class="product-modal__weight">/ {{ weightLabel() }}</span>
         </div>
 
-        <button
-          type="button"
-          class="product-modal__cart-btn"
-          [class.product-modal__cart-btn--added]="inCart()"
-          [disabled]="product().stock_quantity === 0"
-          (click)="addToCart.emit()"
-        >
-          {{ inCart() ? '✓ Added to Cart' : 'Add to Cart' }}
-        </button>
+        <div class="product-modal__cart-actions">
+          <div class="product-modal__quantity">
+            <button type="button" class="product-modal__qty-btn" (click)="decrementQuantity()">−</button>
+            <span class="product-modal__qty-value">{{ quantity() }}</span>
+            <button
+              type="button"
+              class="product-modal__qty-btn"
+              [disabled]="quantity() >= product().stock_quantity"
+              (click)="incrementQuantity()"
+            >
+              +
+            </button>
+          </div>
+
+          <button
+            type="button"
+            class="product-modal__cart-btn"
+            [class.product-modal__cart-btn--added]="inCart()"
+            [disabled]="product().stock_quantity === 0"
+            (click)="addToCart()"
+          >
+            @if (cartQuantity() > 0) {
+              Add {{ quantity() }} more ({{ cartQuantity() }} in cart)
+            } @else {
+              Add {{ quantity() }} to Cart
+            }
+          </button>
+        </div>
       </div>
     </div>
   </div>

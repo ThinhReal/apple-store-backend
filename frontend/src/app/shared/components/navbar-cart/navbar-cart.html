@@ -1,0 +1,86 @@
+<div class="navbar-cart">
+  <button
+    type="button"
+    class="navbar-cart__toggle"
+    (click)="toggleDropdown($event)"
+    [attr.aria-expanded]="dropdownOpen()"
+    aria-haspopup="true"
+    aria-label="Shopping cart"
+  >
+    <span class="navbar-cart__icon" aria-hidden="true">🛒</span>
+    @if (totalItems() > 0) {
+      <span class="navbar-cart__badge">{{ totalItems() }}</span>
+    }
+  </button>
+
+  @if (dropdownOpen()) {
+    <div class="navbar-cart__dropdown" role="dialog" aria-label="Cart preview">
+      <div class="navbar-cart__header">
+        <h2 class="navbar-cart__title">Your Cart</h2>
+        <span class="navbar-cart__count">{{ totalItems() }} item{{ totalItems() === 1 ? '' : 's' }}</span>
+      </div>
+
+      @if (cartItems().length === 0) {
+        <p class="navbar-cart__empty">Your cart is empty. Browse products to add items.</p>
+      } @else {
+        <ul class="navbar-cart__list">
+          @for (item of cartItems(); track item.productId) {
+            <li class="navbar-cart__item">
+              <img class="navbar-cart__thumb" [src]="item.imageUrl" [alt]="item.name" />
+
+              <div class="navbar-cart__details">
+                <span class="navbar-cart__name">{{ item.name }}</span>
+                <span class="navbar-cart__price">
+                  {{ item.price | currency: 'USD' : 'symbol' : '1.2-2' }}
+                </span>
+
+                <div class="navbar-cart__quantity">
+                  <button
+                    type="button"
+                    class="navbar-cart__qty-btn"
+                    (click)="decrementQuantity(item.productId, item.quantity)"
+                    aria-label="Decrease quantity"
+                  >
+                    −
+                  </button>
+                  <span class="navbar-cart__qty-value">{{ item.quantity }}</span>
+                  <button
+                    type="button"
+                    class="navbar-cart__qty-btn"
+                    [disabled]="item.quantity >= item.stockQuantity"
+                    (click)="incrementQuantity(item.productId, item.quantity, item.stockQuantity)"
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="navbar-cart__remove"
+                (click)="removeItem(item.productId, $event)"
+                aria-label="Remove item"
+              >
+                ×
+              </button>
+            </li>
+          }
+        </ul>
+
+        <div class="navbar-cart__footer">
+          <div class="navbar-cart__subtotal">
+            <span>Subtotal</span>
+            <strong>{{ totalPrice() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+          </div>
+          <a class="navbar-cart__checkout navbar-cart__checkout--primary" routerLink="/checkout" (click)="closeDropdown()">
+            Checkout
+          </a>
+          <a class="navbar-cart__checkout" routerLink="/products" (click)="closeDropdown()">
+            Continue shopping
+          </a>
+        </div>
+      }
+    </div>
+  }
+</div>

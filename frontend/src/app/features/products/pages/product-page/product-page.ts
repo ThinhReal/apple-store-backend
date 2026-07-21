@@ -2,6 +2,7 @@ import { CurrencyPipe, DOCUMENT } from '@angular/common';
 import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { CartService } from '../../../../core/services/cart.service';
 import { ProductDetailModal } from '../../../../shared/components/product-detail-modal/product-detail-modal';
 import { Product } from '../../../../shared/models/product.model';
 import { getProductImageUrl } from '../../../../shared/utils/product-image.util';
@@ -15,6 +16,7 @@ import { ProductService } from '../../services/product.service';
 })
 export class ProductPage {
   private readonly productService = inject(ProductService);
+  private readonly cartService = inject(CartService);
   private readonly document = inject(DOCUMENT);
   private readonly route = inject(ActivatedRoute);
 
@@ -22,7 +24,6 @@ export class ProductPage {
   loading = signal(true);
   error = signal<string | null>(null);
   activeCategory = signal('All');
-  cart = signal<Set<string>>(new Set());
   wishlist = signal<Set<string>>(new Set());
   selectedProduct = signal<Product | null>(null);
   detailLoading = signal(false);
@@ -94,21 +95,13 @@ export class ProductPage {
     this.document.body.style.overflow = '';
   }
 
-  toggleCart(id: Product['id'], event?: Event): void {
+  addToCart(product: Product, event?: Event): void {
     event?.stopPropagation();
-    const key = this.productKey(id);
+    this.cartService.addProduct(product, 1);
+  }
 
-    this.cart.update((current) => {
-      const next = new Set(current);
-
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-
-      return next;
-    });
+  cartQuantity(id: Product['id']): number {
+    return this.cartService.getQuantity(id);
   }
 
   toggleWishlist(id: Product['id'], event?: Event): void {
@@ -129,7 +122,7 @@ export class ProductPage {
   }
 
   isInCart(id: Product['id']): boolean {
-    return this.cart().has(this.productKey(id));
+    return this.cartService.isInCart(id);
   }
 
   isInWishlist(id: Product['id']): boolean {

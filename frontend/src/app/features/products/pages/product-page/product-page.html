@@ -36,15 +36,6 @@
       } @else if (filteredProducts().length === 0) {
         <div class="products-page__state">No products found. Add some in the backend first.</div>
       } @else {
-        @if (cart().size > 0) {
-          <div class="products-page__cart-banner">
-            <span class="products-page__cart-text">
-              🛒 {{ cart().size }} item{{ cart().size > 1 ? 's' : '' }} in your cart
-            </span>
-            <button type="button" class="products-page__checkout">Checkout</button>
-          </div>
-        }
-
         <div class="products-page__grid">
           @for (product of filteredProducts(); track product.id) {
             <article class="product-item" (click)="openProduct(product)">
@@ -88,9 +79,13 @@
                     class="product-item__cart-btn"
                     [class.product-item__cart-btn--added]="isInCart(product.id)"
                     [disabled]="product.stock_quantity === 0"
-                    (click)="toggleCart(product.id, $event)"
+                    (click)="addToCart(product, $event)"
                   >
-                    {{ isInCart(product.id) ? '✓ Added' : 'Add to Cart' }}
+                    @if (cartQuantity(product.id) > 0) {
+                      ✓ {{ cartQuantity(product.id) }} in cart
+                    } @else {
+                      Add to Cart
+                    }
                   </button>
                 </div>
               </div>
@@ -111,9 +106,9 @@
     [weightLabel]="productWeightLabel(product)"
     [loading]="detailLoading()"
     [inCart]="isInCart(product.id)"
+    [cartQuantity]="cartQuantity(product.id)"
     [inWishlist]="isInWishlist(product.id)"
     (close)="closeProduct()"
     (toggleWishlist)="toggleWishlist(product.id)"
-    (addToCart)="toggleCart(product.id)"
   />
 }

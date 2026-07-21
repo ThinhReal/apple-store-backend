@@ -257,10 +257,50 @@
 
 .product-modal__footer {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
   margin-top: auto;
+}
+
+.product-modal__cart-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: min(100%, 18rem);
+}
+
+.product-modal__quantity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.product-modal__qty-btn {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgb(93 64 55 / 18%);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-brown);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.product-modal__qty-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.product-modal__qty-value {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-brown-dark);
 }
 
 .product-modal__price-wrap {

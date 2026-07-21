@@ -34,4 +34,10 @@ export interface ProductRequest {
   description?: string;
   price: number;
   stock_quantity: number;
+  tasting_notes?: string[];
+  best_for?: string[];
+  origin?: string;
+  season?: string;
+  image_url?: string;
+  flavor_profile?: FlavorProfile;
 }

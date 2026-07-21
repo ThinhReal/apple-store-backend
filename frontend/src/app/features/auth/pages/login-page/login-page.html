@@ -1,0 +1,44 @@
+<section class="account-auth">
+  <div class="account-auth__card">
+    <span class="account-auth__eyebrow">Customer Account</span>
+    <h1 class="account-auth__title">Sign in to your account</h1>
+    <p class="account-auth__subtitle">
+      Sign in when you are ready to complete checkout. You can browse products and build your cart without logging in.
+    </p>
+
+    <form class="account-auth__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="account-auth__field">
+        <span class="account-auth__label">Email</span>
+        <input
+          class="account-auth__input"
+          type="email"
+          formControlName="email"
+          autocomplete="username"
+          [class.account-auth__input--invalid]="form.controls.email.touched && form.controls.email.invalid"
+        />
+      </label>
+
+      <label class="account-auth__field">
+        <span class="account-auth__label">Password</span>
+        <input
+          class="account-auth__input"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          [class.account-auth__input--invalid]="form.controls.password.touched && form.controls.password.invalid"
+        />
+      </label>
+
+      <button class="account-auth__submit" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <p class="account-auth__footer">
+      New here?
+      <a class="account-auth__link" [routerLink]="['/signup']" [queryParams]="{ returnUrl: route.snapshot.queryParamMap.get('returnUrl') }">
+        Create an account
+      </a>
+    </p>
+  </div>
+</section>

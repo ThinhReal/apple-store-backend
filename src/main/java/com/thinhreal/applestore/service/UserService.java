@@ -4,8 +4,10 @@ import com.thinhreal.applestore.api.model.RequestUserDTO;
 import com.thinhreal.applestore.api.model.ResponseUserDTO;
 import com.thinhreal.applestore.exception.BusinessException;
 import com.thinhreal.applestore.model.entity.UserEntity;
+import com.thinhreal.applestore.model.enums.UserRole;
 import com.thinhreal.applestore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +17,13 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public ResponseUserDTO createUser(RequestUserDTO request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new BusinessException("An account with this email already exists");
+        }
+
         UserEntity newUser = new UserEntity(
                 request.getFirstName(),
                 request.getLastName(),
@@ -24,6 +31,8 @@ public class UserService {
                 request.getPassword(),
                 request.getAddress()
         );
+        newUser.setRole(UserRole.CUSTOMER);
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         return toDto(userRepository.save(newUser));
     }
 
@@ -66,7 +75,9 @@ public class UserService {
         entity.setFirst_name(dto.getFirstName());
         entity.setLast_name(dto.getLastName());
         entity.setEmail(dto.getEmail());
-        entity.setPassword(dto.getPassword());
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
         entity.setAddress(dto.getAddress());
     }
 }

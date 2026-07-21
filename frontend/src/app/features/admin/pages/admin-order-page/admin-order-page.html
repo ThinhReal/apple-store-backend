@@ -1,0 +1,93 @@
+<section class="admin-orders">
+  <header class="admin-orders__header">
+    <div>
+      <span class="admin-orders__eyebrow">Admin</span>
+      <h1 class="admin-orders__title">Order Management</h1>
+      <p class="admin-orders__subtitle">Review customer orders and update fulfillment status.</p>
+    </div>
+
+    <div class="admin-orders__header-actions">
+      <a class="admin-orders__secondary-btn" routerLink="/admin/products">Manage Products</a>
+      <button type="button" class="admin-orders__logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <nav class="admin-orders__nav">
+    <a class="admin-orders__nav-link" routerLink="/admin/products">Products</a>
+    <a class="admin-orders__nav-link admin-orders__nav-link--active" routerLink="/admin/orders">Orders</a>
+  </nav>
+
+  @if (loading()) {
+    <p class="admin-orders__empty">Loading orders...</p>
+  } @else if (orders().length === 0) {
+    <p class="admin-orders__empty">No customer orders yet.</p>
+  } @else {
+    <div class="admin-orders__list">
+      @for (order of orders(); track order.id) {
+        <article class="admin-orders__card">
+          <div class="admin-orders__card-header">
+            <div>
+              <h2 class="admin-orders__order-id">Order #{{ order.id }}</h2>
+              <p class="admin-orders__customer">
+                {{ order.customer_name ?? 'Unknown customer' }}
+                @if (order.customer_email) {
+                  <span>({{ order.customer_email }})</span>
+                }
+              </p>
+              <p class="admin-orders__order-date">
+                @if (order.order_date) {
+                  Placed on {{ order.order_date | date: 'medium' }}
+                } @else {
+                  Order date unavailable
+                }
+              </p>
+            </div>
+
+            <div class="admin-orders__summary">
+              <label class="admin-orders__status-field">
+                <span>Status</span>
+                <select
+                  class="admin-orders__status-select"
+                  [value]="order.status ?? 'PENDING'"
+                  [disabled]="updatingOrderId() === order.id"
+                  (change)="updateStatus(order, $any($event.target).value)"
+                >
+                  @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                  }
+                </select>
+              </label>
+
+              <strong class="admin-orders__total">
+                {{ order.total_amount | currency: 'USD' : 'symbol' : '1.2-2' }}
+              </strong>
+            </div>
+          </div>
+
+          <div class="admin-orders__meta">
+            <span>{{ itemCount(order) }} item{{ itemCount(order) === 1 ? '' : 's' }}</span>
+            @if (updatingOrderId() === order.id) {
+              <span class="admin-orders__updating">Updating...</span>
+            }
+          </div>
+
+          <ul class="admin-orders__items">
+            @for (item of order.order_items ?? []; track item.id ?? item.product_id) {
+              <li class="admin-orders__item">
+                <span class="admin-orders__item-name">
+                  {{ item.product_name ?? ('Product ' + item.product_id) }}
+                </span>
+                <span class="admin-orders__item-meta">
+                  {{ item.quantity }} × {{ item.unit_price | currency: 'USD' : 'symbol' : '1.2-2' }}
+                </span>
+                <strong class="admin-orders__item-total">
+                  {{ item.quantity * item.unit_price | currency: 'USD' : 'symbol' : '1.2-2' }}
+                </strong>
+              </li>
+            }
+          </ul>
+        </article>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,64 @@
+<section class="my-orders">
+  <div class="my-orders__inner">
+    <header class="my-orders__header">
+      <span class="my-orders__eyebrow">Account</span>
+      <h1 class="my-orders__title">My Orders</h1>
+      <p class="my-orders__subtitle">Track everything you have purchased from Grove &amp; Root.</p>
+    </header>
+
+    @if (loading()) {
+      <div class="my-orders__state">Loading your orders...</div>
+    } @else if (orders().length === 0) {
+      <div class="my-orders__state my-orders__state--empty">
+        <p>You have not placed any orders yet.</p>
+        <a class="my-orders__cta" routerLink="/products">Browse products</a>
+      </div>
+    } @else {
+      <div class="my-orders__list">
+        @for (order of orders(); track order.id) {
+          <article class="my-orders__card">
+            <div class="my-orders__card-header">
+              <div>
+                <h2 class="my-orders__order-id">Order #{{ order.id }}</h2>
+                <p class="my-orders__order-date">
+                  @if (order.order_date) {
+                    Placed on {{ order.order_date | date: 'medium' }}
+                  } @else {
+                    Order date unavailable
+                  }
+                </p>
+              </div>
+
+              <div class="my-orders__summary">
+                <span class="my-orders__status">{{ order.status ?? 'PENDING' }}</span>
+                <strong class="my-orders__total">
+                  {{ order.total_amount | currency: 'USD' : 'symbol' : '1.2-2' }}
+                </strong>
+              </div>
+            </div>
+
+            <div class="my-orders__meta">
+              <span>{{ itemCount(order) }} item{{ itemCount(order) === 1 ? '' : 's' }}</span>
+            </div>
+
+            <ul class="my-orders__items">
+              @for (item of order.order_items ?? []; track item.id ?? item.product_id) {
+                <li class="my-orders__item">
+                  <span class="my-orders__item-name">
+                    {{ item.product_name ?? ('Product ' + item.product_id) }}
+                  </span>
+                  <span class="my-orders__item-meta">
+                    {{ item.quantity }} × {{ item.unit_price | currency: 'USD' : 'symbol' : '1.2-2' }}
+                  </span>
+                  <strong class="my-orders__item-total">
+                    {{ item.quantity * item.unit_price | currency: 'USD' : 'symbol' : '1.2-2' }}
+                  </strong>
+                </li>
+              }
+            </ul>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>

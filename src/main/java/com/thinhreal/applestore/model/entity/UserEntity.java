@@ -20,6 +20,7 @@ import org.passay.RuleResult;
 import org.passay.PasswordData;
 
 import com.thinhreal.applestore.model.entity.OrderEntity;
+import com.thinhreal.applestore.model.enums.UserRole;
 
 @Entity
 @Table(name="users")
@@ -42,6 +43,10 @@ public class UserEntity {
     private String first_name;
     private String last_name;
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.CUSTOMER;
 
     // Constructor
     public UserEntity (String first_name,

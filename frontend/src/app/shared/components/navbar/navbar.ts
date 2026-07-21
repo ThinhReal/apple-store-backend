@@ -1,6 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
+
+import { AuthService } from '../../../core/services/auth.service';
+import { NavbarCart } from '../navbar-cart/navbar-cart';
 
 export interface NavLink {
   label: string;
@@ -9,12 +12,13 @@ export interface NavLink {
 
 @Component({
   selector: 'app-navbar',
-  imports: [],
+  imports: [NavbarCart, RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
 export class Navbar {
   private readonly router = inject(Router);
+  readonly authService = inject(AuthService);
 
   mobileOpen = signal(false);
   private readonly currentPath = signal(this.getPathname(this.router.url));
@@ -40,8 +44,19 @@ export class Navbar {
     this.mobileOpen.update((open) => !open);
   }
 
+  closeMobile(): void {
+    this.mobileOpen.set(false);
+  }
+
   navigate(path: string): void {
     this.router.navigate(path === '' ? ['/'] : ['/', path]);
+    this.mobileOpen.set(false);
+  }
+
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => this.router.navigate(['/']),
+    });
     this.mobileOpen.set(false);
   }
 

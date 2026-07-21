@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
-import { Component, HostListener, input, output } from '@angular/core';
+import { Component, HostListener, inject, input, output, signal } from '@angular/core';
 
+import { CartService } from '../../../core/services/cart.service';
 import { Product } from '../../models/product.model';
 
 @Component({
@@ -10,6 +11,8 @@ import { Product } from '../../models/product.model';
   styleUrl: './product-detail-modal.scss',
 })
 export class ProductDetailModal {
+  private readonly cartService = inject(CartService);
+
   product = input.required<Product>();
   detailImage = input.required<string>();
   badge = input<string | null>(null);
@@ -17,11 +20,13 @@ export class ProductDetailModal {
   weightLabel = input('each');
   loading = input(false);
   inCart = input(false);
+  cartQuantity = input(0);
   inWishlist = input(false);
+
+  quantity = signal(1);
 
   close = output<void>();
   toggleWishlist = output<void>();
-  addToCart = output<void>();
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
@@ -39,6 +44,18 @@ export class ProductDetailModal {
   onWishlistClick(event: Event): void {
     event.stopPropagation();
     this.toggleWishlist.emit();
+  }
+
+  decrementQuantity(): void {
+    this.quantity.update((value) => Math.max(1, value - 1));
+  }
+
+  incrementQuantity(): void {
+    this.quantity.update((value) => Math.min(this.product().stock_quantity, value + 1));
+  }
+
+  addToCart(): void {
+    this.cartService.addProduct(this.product(), this.quantity());
   }
 
   displayValue(value?: string | number | null): string {

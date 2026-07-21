@@ -1,0 +1,22 @@
+@if (dialog(); as current) {
+  <div class="confirm-dialog" (click)="onBackdropClick($event)">
+    <div class="confirm-dialog__panel" role="dialog" aria-modal="true" [attr.aria-label]="current.title">
+      <h2 class="confirm-dialog__title">{{ current.title }}</h2>
+      <p class="confirm-dialog__message">{{ current.message }}</p>
+
+      <div class="confirm-dialog__actions">
+        <button type="button" class="confirm-dialog__btn confirm-dialog__btn--cancel" (click)="cancel()">
+          {{ current.cancelLabel }}
+        </button>
+        <button
+          type="button"
+          class="confirm-dialog__btn confirm-dialog__btn--confirm"
+          [class.confirm-dialog__btn--danger]="current.variant === 'danger'"
+          (click)="confirm()"
+        >
+          {{ current.confirmLabel }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

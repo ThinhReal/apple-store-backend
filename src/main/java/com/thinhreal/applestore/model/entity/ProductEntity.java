@@ -65,6 +65,10 @@ public class ProductEntity {
     @Column(nullable = false)
     private Integer stockQuantity;
 
+    @Version
+    @Column(nullable = false)
+    private Long version = 0L;
+
     @Column(name = "image_url")
     private String imageUrl;
 
