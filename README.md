@@ -1,120 +1,140 @@
-# 🍎 Apple Store - iStore REST API
+# Grove & Root - Apple Store E-commerce
 
-Welcome to the backend project for the **Apple Store** system. This is a professional e-commerce application built using Spring Boot, MySQL Cloud (Aiven), and Swagger.
+A full-stack e-commerce application for an artisan apple orchard storefront. Customers can browse products, manage a cart, and checkout securely. Admins can manage the product catalog and update customer order statuses.
 
-## 🛠️ System Requirements
-- **Java 17+**
+The backend is designed around **ACID database guarantees**, especially at checkout, where inventory, orders, and order items must stay consistent even under concurrent purchases.
 
-- **Maven 3.x**
+## Tech Stack
 
-- **Aiven.io** account (or local MySQL)
+### Backend
+| Technology | Purpose |
+| :--- | :--- |
+| **Java 21** | Application runtime |
+| **Spring Boot 4** | REST API, dependency injection, configuration |
+| **Spring Data JPA / Hibernate** | ORM, entity mapping, transactions |
+| **MySQL** | Primary relational database (Aiven Cloud) |
+| **Spring Security** | Authentication and role-based authorization |
+| **JWT (JJWT)** | Stateless access tokens via HTTP-only cookies |
+| **SpringDoc OpenAPI** | Interactive API documentation (Swagger UI) |
+| **OpenAPI Generator** | API contract-first code generation |
+| **Lombok** | Boilerplate reduction for entities and DTOs |
+| **Maven** | Build and dependency management |
 
-## 🔑 Setup Instructions
+### Frontend
+| Technology | Purpose |
+| :--- | :--- |
+| **Angular 22** | SPA framework with standalone components |
+| **TypeScript** | Type-safe UI development |
+| **RxJS** | Async data flows for API calls |
+| **SCSS** | Component styling |
+| **Angular SSR** | Server-side rendering support |
 
-For security reasons, sensitive information has been hidden. To run the project, you need to set up the following **Environment Variables** in your IDE:
+## ACID in This Application
 
-| Variable | Description | Example |
+Checkout is the most sensitive workflow: multiple products, stock deduction, order creation, and order line items must succeed or fail together.
 
-| :--- | :--- | :--- |
+### Atomicity
+Checkout runs inside a single `@Transactional` service method. If any step fails (invalid product, insufficient stock, persistence error), the entire operation rolls back — no partial orders and no half-updated inventory.
 
-| `DB_URL` | Database connection path | `jdbc:mysql://host:port/defaultdb?ssl-mode=REQUIRED` |
+### Consistency
+Business rules are enforced before writes:
+- Order quantity must be greater than zero
+- Stock cannot go negative
+- Only valid order status transitions are allowed for admin updates
+- Cancelled orders restore inventory; reactivating a cancelled order reserves stock again
 
-| `DB_USERNAME` | DB Username | `avnadmin` |
+### Isolation
+Concurrent checkouts for the same product are handled with **optimistic locking** (see below). Each transaction reads product stock with a version number and commits only if no other transaction has modified that product in the meantime.
 
-| `DB_PASSWORD` | DB Password | `your_secret_password` |
+### Durability
+Committed orders and inventory changes are persisted to MySQL. Once checkout completes, the order and updated stock survive application restarts.
 
-### Launch Steps:
-1. Clone the project: `git clone <your-repo-url>`
-2. Open the project using IntelliJ IDEA.
+## Optimistic Locking
 
-3. Set Environment Variables in **Run/Debug Configurations**.
+To prevent overselling when two customers checkout the same product at the same time, the app uses JPA optimistic locking on `ProductEntity`:
 
-4. Run the application.
+```java
+@Version
+@Column(nullable = false)
+private Long version = 0L;
+```
 
-5. Access Swagger UI at: `http://localhost:8080/swagger-ui/index.html`
+### How it works
+1. When a product is loaded, Hibernate reads its current `version`.
+2. During checkout, `InventoryService` deducts stock and saves the product.
+3. On save, Hibernate checks that the `version` in the database still matches what was read.
+4. If another checkout updated the product first, Hibernate throws `ObjectOptimisticLockingFailureException`.
+5. A global exception handler converts this to **HTTP 409 Conflict** with a user-friendly message:
 
-## 👨‍💻 Author
-- **Thịnh Real** - Backend Developer
-## Challenge 1: The Blueprint (Setup, Entities & Swagger)
-Before writing business logic, a system needs a foundation and clear documentation so the Frontend team knows what to expect.
+   > *"The product stock has been updated by another user. Please review your cart."*
 
-- Objective: Design the database schema and expose the API documentation.
+The checkout page displays this message so the customer can refresh their cart and try again.
 
-- Tasks:
+### Why optimistic locking?
+- **No long-held database locks** — better throughput for read-heavy catalog traffic
+- **Safe under contention** — conflicts are detected at commit time rather than silently overselling
+- **Fits e-commerce patterns** — stock conflicts are rare but must be handled correctly when they occur
 
-  - Initialize the Spring Boot project with Web, JPA, SQL (MySQL/PostgreSQL), and SpringDoc (Swagger) dependencies.
+## Features
 
-  - Create the core Entities: User, Product, Order, and OrderItem.
-    ![ERD](https://res.cloudinary.com/drw6fqjgr/image/upload/v1774769901/Screenshot_2026-03-29_at_14.38.04_nalcyu.png)
+- **Customer**: product catalog, cart (localStorage), signup/login, checkout, order history
+- **Admin**: product CRUD, order management with status updates (`PENDING`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`)
+- **Security**: JWT cookies, role-based access (`CUSTOMER`, `ADMIN`), CORS for local development
 
-  - Configure Swagger to display at http://localhost:8080/swagger-ui.html.
+## Getting Started
 
-- Outcome: You have a running application that connects to an SQL database, auto-generates the tables, and displays a beautiful, interactive API documentation page.
+### Requirements
+- Java 21+
+- Maven 3.x
+- Node.js 20+ and npm
+- MySQL database (local or [Aiven](https://aiven.io/))
 
-## Challenge 2: The Catalog (Advanced CRUD, Search & Pagination)
-An Apple Store has hundreds of products. Sending them all at once will crash the app. We need pagination and dynamic searching.
+### Environment Variables
 
-- Objective: Build the Product management APIs for both Customers and Admins.
+| Variable | Description |
+| :--- | :--- |
+| `MYSQL_URL` | JDBC connection URL |
+| `PASSWORD` | Database password |
+| `PORT` | Backend server port (e.g. `8080`) |
 
-- Tasks:
+Example:
 
-  - Implement standard CRUD for Products (Admin only conceptually for now).
+```bash
+export MYSQL_URL="jdbc:mysql://localhost:3306/applestore"
+export PASSWORD="your_password"
+export PORT=8080
+```
 
-  - Implement GET /api/v1/products using Spring Data JPA's Pageable.
+### Run the backend
 
-  - Add custom query methods in the Repository to search by name (e.g., "iPhone") or filter by category (e.g., "MAC").
+```bash
+./mvnw spring-boot:run
+```
 
-- Outcome: You can send a request to /products?page=0&size=5&search=Pro and receive exactly 5 items along with total page metadata.
+Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
-## Challenge 3: The Apple ID (JWT Authentication & Authorization)
-This is the most critical part. You cannot allow anyone to create an order or delete a product without proving who they are and what their role is.
+### Run the frontend
 
-- Objective: Secure the API using JSON Web Tokens (JWT) and Role-Based Access Control (RBAC).
+```bash
+cd frontend
+npm install
+npm start
+```
 
-- Tasks:
+App: [http://localhost:4200](http://localhost:4200)
 
-  - Integrate Spring Security.
+The dev server proxies `/api` requests to the backend on port 8080.
 
-  - Create POST /auth/register and POST /auth/login.
+## Project Structure
 
-  - Write a utility class to generate and validate JWTs.
+```
+applestore/
+├── src/main/java/          # Spring Boot backend (controllers, services, entities)
+├── src/main/resources/     # Application config and OpenAPI spec
+├── frontend/src/app/       # Angular application
+└── pom.xml                 # Backend dependencies
+```
 
-  - Create a JWT Filter to intercept requests and check for the Authorization: Bearer <token> header.
+## Author
 
-  - Restrict POST /products to ADMIN roles and POST /orders to CUSTOMER roles.
-
-- Outcome: Trying to delete an iPhone without an Admin token returns a 403 Forbidden. Logging in successfully returns a valid JWT.
-
-## Challenge 4: The Checkout (Relational Mapping & Transactions)
-E-commerce is all about the checkout. This requires handling multiple database tables simultaneously while ensuring data integrity.
-
-- Objective: Build the ordering system using complex Entity relationships mapping and @Transactional.
-
-- Tasks:
-
-  - Map the One-to-Many and Many-to-Many relationships between User, Order, and OrderItem.
-
-  - Create POST /api/v1/orders. The payload should include a list of product IDs and quantities.
-
-  - Implement logic to calculate the total price and deduct inventory.
-
-  - Use @Transactional to ensure that if saving the order fails, the inventory deduction rolls back.
-
-- Outcome: A user can submit an order for an iPhone and AirPods. The system creates the order, links it to the user, and updates the stock, all in one secure transaction.
-
-## Challenge 5: The QA Engineer (Unit Testing)
-Code isn't finished until it's tested. Professional environments require Unit Tests to ensure future changes don't break existing features.
-
-- Objective: Write automated tests for your application to guarantee stability.
-
-- Tasks:
-
-  - Use JUnit 5 and Mockito to test the ProductService.
-
-  - Mock the ProductRepository so the test doesn't actually hit the SQL database.
-
-  - Write tests for "Product Found" and "Product Not Found" (Custom Exception) scenarios.
-
-  - (Bonus) Use MockMvc to test the Controller endpoints.
-
-- Outcome: You can run mvn test and see a beautiful green report proving your logic works flawlessly without starting the actual server.
+**Thịnh Nguyen** - Backend Developer
