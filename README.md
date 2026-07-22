@@ -1,5 +1,7 @@
 # 🍎 Grove & Root - Apple Store E-commerce
 
+**Live site:** [https://dilx8k8ttt2y5.cloudfront.net](https://dilx8k8ttt2y5.cloudfront.net)
+
 A full-stack e-commerce application for an artisan apple orchard storefront. Customers can browse products, manage a cart, and checkout securely. Admins can manage the product catalog and update customer order statuses.
 
 The backend is designed around **ACID database guarantees**, especially at checkout, where inventory, orders, and order items must stay consistent even under concurrent purchases.
@@ -79,7 +81,56 @@ The checkout page displays this message so the customer can refresh their cart a
 
 - **Customer**: product catalog, cart (localStorage), signup/login, checkout, order history
 - **Admin**: product CRUD, order management with status updates (`PENDING`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`)
-- **Security**: JWT cookies, role-based access (`CUSTOMER`, `ADMIN`), CORS for local development
+- **Security**: JWT cookies, role-based access (`CUSTOMER`, `ADMIN`), CORS for local and production origins
+
+## Deployment (AWS)
+
+The application is deployed on AWS with a split frontend/backend architecture.
+
+| Service | Role |
+| :--- | :--- |
+| **Amazon S3** | Hosts the built Angular static assets (`index.html`, JS, CSS, images) |
+| **Amazon CloudFront** | CDN in front of S3 — serves the SPA over HTTPS with a global edge network |
+| **Amazon EC2** | Runs the Spring Boot backend (REST API, JWT auth, business logic) |
+| **Aiven MySQL** | Managed database for products, orders, users, and inventory |
+
+### Architecture
+
+```
+Browser
+   │
+   ├─► CloudFront (https://dilx8k8ttt2y5.cloudfront.net)
+   │       └─► S3 bucket (Angular SPA)
+   │
+   └─► EC2 instance (Spring Boot API on port 8080)
+           └─► Aiven MySQL
+```
+
+### Frontend (S3 + CloudFront)
+
+1. Build the Angular app: `cd frontend && npm run build`
+2. Upload the output from `frontend/dist/` to an S3 bucket configured for static website hosting
+3. Create a CloudFront distribution pointing at the S3 origin
+4. CloudFront provides HTTPS, caching, and a stable public URL for the storefront
+
+### Backend (EC2)
+
+1. Package the app: `./mvnw clean package -DskipTests`
+2. Deploy the JAR to an EC2 instance and run it with production environment variables (`MYSQL_URL`, `PASSWORD`, `JWT_SECRET`, `COOKIE_SECURE=true`, etc.)
+3. Open the EC2 security group to allow inbound traffic on the API port (e.g. `8080`)
+
+### CORS and cross-origin auth
+
+The Angular SPA is served from CloudFront while the API runs on EC2 — a different origin. Browsers enforce CORS and block API calls unless the backend explicitly allows the frontend origin.
+
+Spring Security is configured in `SecurityConfig.java` with a `CorsConfigurationSource` bean that:
+
+- Allows the CloudFront origin: `https://dilx8k8ttt2y5.cloudfront.net`
+- Keeps local dev origins: `http://localhost:4200`, `http://127.0.0.1:4200`
+- Sets `allowCredentials(true)` so HTTP-only JWT cookies are sent on cross-origin requests
+- Permits methods: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`
+
+When a browser sends a request, it includes an `Origin` header. Spring compares that value against the allowed list and, if it matches, responds with `Access-Control-Allow-Origin` and `Access-Control-Allow-Credentials`. Without this, the API returns **403 Forbidden** and the SPA cannot authenticate or fetch data.
 
 ## Getting Started
 
