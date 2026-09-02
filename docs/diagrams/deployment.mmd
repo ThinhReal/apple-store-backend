@@ -1,0 +1,19 @@
+flowchart TB
+    subgraph Client["Client Layer"]
+        Browser["Web Browser<br/>(Customer / Admin)"]
+    end
+
+    subgraph AWS["Amazon Web Services"]
+        CF["CloudFront CDN<br/>https://dilx8k8ttt2y5.cloudfront.net"]
+        S3["Amazon S3<br/>Angular SPA static assets"]
+        EC2["Amazon EC2<br/>Spring Boot API :8080"]
+    end
+
+    subgraph External["External Services"]
+        Aiven["Aiven MySQL<br/>(Managed Database)"]
+    end
+
+    Browser -->|"HTTPS — Load SPA"| CF
+    CF --> S3
+    Browser -->|"HTTPS + CORS<br/>JWT HttpOnly Cookies"| EC2
+    EC2 -->|"JDBC / Spring Data JPA"| Aiven

@@ -1,0 +1,23 @@
+flowchart TB
+    subgraph Frontend["Angular 22 Frontend"]
+        Pages["Feature Pages<br/>Home, Products, Checkout, Orders, Admin"]
+        Core["Core Layer<br/>Guards, Interceptors, Services"]
+        Shared["Shared Components<br/>Navbar, ProductCard, Toast"]
+        Pages --> Core
+        Pages --> Shared
+    end
+
+    subgraph Backend["Spring Boot 4 Backend"]
+        Security["Security<br/>JWT Filter, CORS, RBAC"]
+        Controllers["Controllers<br/>Auth, Product, Category, Checkout, Admin"]
+        Services["Services<br/>Order, Inventory, Auth, Product"]
+        Persistence["Persistence<br/>JPA Repositories + Entities"]
+        Controllers --> Security
+        Controllers --> Services
+        Services --> Persistence
+    end
+
+    DB[(MySQL / Aiven)]
+
+    Frontend -->|"REST /api/v1/*"| Backend
+    Backend --> DB
